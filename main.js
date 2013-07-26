@@ -3,7 +3,7 @@ require.config({
     }
 });
 
-define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer', 'draggable', 'draggableLayer', ], function (exports, cc, QLayer, BLDrawNode, Polygon, ToolLayer, Draggable, DraggableLayer) {
+define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer', 'draggable', 'draggableLayer'], function (exports, cc, QLayer, BLDrawNode, Polygon, ToolLayer, Draggable, DraggableLayer) {
     'use strict';
 
     var DRAGGABLE_PREFIX = 'DRAGGABLE_';
@@ -76,11 +76,17 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             } else {
                 dg.initWithFile(resource);
             }
-
+			dg.setZoomOnTouchDown(false);
+			
             dg.setPosition(position.x, position.y);
+            dg._homePosition = cc.p(position.x, position.y);
+
+            
+            //dg.setScale(0.5);
 
             dg.onMoved(function (position, draggable) {
-                draggable.setRotation(0);
+                //draggable.setRotation(0);
+                draggable.setScale(Math.min(Math.max(0.02*position.x,1),2));
                 self._draggableLayer.reorderChild(draggable, self._draggableCounter);
                 self._draggableLayer.sortAllChildren();
                 self._draggableLayer.reshuffleTouchHandlers();
@@ -90,12 +96,25 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 self._prevDraggable = draggable.tag;
             });
             dg.onMoveEnded(function (position, draggable) {
-                draggable.setRotation(_.random(-10, 10));
+                //draggable.setRotation(_.random(-10, 10));
+                this._windowSize = cc.Director.getInstance().getWinSize();
+                //if in dropzone, left align; else return to starting point, scale back to 1
+                if(position.x<(0.5*this._windowSize.width)){
+            		this.setPosition(this._homePosition);
+            		draggable.setScale(1);
+                }
+                else{
+                	draggable.setScale(2);
+                }
+                                
             });
             this._draggableLayer.addChild(dg);
             this.registerControl(DRAGGABLE_PREFIX + this._draggableCounter, dg);
             this._draggableCounter++;
         },
+        
+
+                	
 
         getState: function () {
             throw {name : "NotImplementedError", message : "This needs implementing"};
@@ -114,8 +133,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             _.each(colours, function (colour, i) {
 
                 var l = new cc.LayerColor();
-                l.init(colour, 100, 100);
-                self.addDraggable(cc.p(10 + i * 120, 10), l);
+                l.init(colour, 50*(i+1), 25);
+                self.addDraggable(cc.p(10, 60 + 55*i), l);
 
             });
 
