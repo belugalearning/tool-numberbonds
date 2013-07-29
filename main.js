@@ -114,33 +114,40 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 									draggable.setPosition((dz.getPosition().x)+(dz._filled*50),(dz.getPosition().y));
 									draggable.setScale(1);
 									dz._filled=dz._filled+draggable._length;
-									}
+                                    dz._filledArray.push(draggable.tag);
+								}
 								else{
 									draggable.setPosition(draggable._homePosition);
 									draggable.setScale(0.5);
 								}
 							}
-							
 							// add length to array
-							//dz._filledArray.push(draggable._length);
                         }
                          
                     	else {
                     		if(dz.isPointInsideArea(draggable._lastPosition)){
-							dz._filled=dz._filled-draggable._length;
-							//for all bars with index > this draggable, shift left by draggable's length
-							//splice array to remove that index.
-						
-							//+ need to make sure remaining bars get pushed to the left.
-		         		}
+    							dz._filled=dz._filled-draggable._length;
+
+    							//for all bars with index > this draggable, shift left by draggable's length
+                                // for(var j=(1+indexOf(draggable.tag);j<dz._filledArray.length;j++){
+                                //     //translate dz._filledArray[j] left by length of draggable
+                                //     dz._filledArray[j].setPosition((dz._filledArray[j].getPosition().x)+(draggable._length*50),(dz.getPosition().y));
+
+                                // }
+                                //bars.setPosition((bars.getPosition().x)-(draggable._length*50),(bars.getPosition().y));
+    							//splice array to remove that index.
+                                dz._filledArray.splice(dz._filledArray.indexOf(draggable.tag),1);
+
+    						
+    							//+ need to make sure remaining bars get pushed to the left.
+    		         		}
 							draggable.setPosition(draggable._homePosition);
 							draggable.setScale(0.5);
 		         		
                     }
 
                 });
-                
-                                
+                            
             });
             this._draggableLayer.addChild(dg);
             this.registerControl(DRAGGABLE_PREFIX + this._draggableCounter, dg);
@@ -196,12 +203,12 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             self.addChild(self._draggableLayer);
 
             _.each(colours, function (colour, i) {
-
-
-                var l = new cc.LayerColor();
-                l.init(colour, 50*(i+1), 40);
-                
-                var dg = self.addNumberBondsBar((i+1), cc.p(10, 600 - 55*i), l);
+                for(var j=1;j<11;j++){
+                    var l = new cc.LayerColor();
+                    l.init(colour, 50*(i+1), 40);
+                    
+                    var dg = self.addNumberBondsBar((i+1), cc.p(10, 600 - 55*i), l);
+                }
                 
 
             });
@@ -214,6 +221,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     dz._label.setPosition(150,250);
                     dz._label.setFontSize(50);
                     dz._filled = 0;
+                    dz._filledArray = new Array(),
                     dz._length = 10;
                     
 				
