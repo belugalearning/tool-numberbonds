@@ -85,13 +85,11 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 			dg.setZoomOnTouchDown(false);
 			
             dg.setPosition(position.x, position.y);
-            dg._homePosition = cc.p(position.x, position.y);
 				
             dg.setScale(0.5);
             dg._length=length;
 
             dg.onMoved(function (position, draggable) {
-                //draggable.setRotation(0);
                 draggable.setScale(Math.min(Math.max(0.01*position.x,0.5),1));
                 self._draggableLayer.reorderChild(draggable, self._draggableCounter);
                 self._draggableLayer.sortAllChildren();
@@ -101,50 +99,145 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 }
                 self._prevDraggable = draggable.tag;
             });
+
             dg.onMoveEnded(function (position, draggable) {
-
- 				var dzs = self.getControls(DROPZONE_PREFIX);
-                _.each(dzs, function(dz) {
-                    if (dz.isPointInsideArea(position)) {
-                    		if(dz.isPointInsideArea(draggable._lastPosition)){
-                    			  draggable.setPosition(draggable._lastPosition);
-                    			  }
-                    		else{
-                    			if((dz._filled+draggable._length)<=dz._length){               	
-									draggable.setPosition((dz.getPosition().x)+(dz._filled*50),(dz.getPosition().y));
-									draggable.setScale(1);
-									dz._filled=dz._filled+draggable._length;
-                                    dz._filledArray.push(draggable.tag);
-								}
-								else{
-									draggable.setPosition(draggable._homePosition);
-									draggable.setScale(0.5);
-								}
-							}
-							// add length to array
+ 				var dropZones = self.getControls(DROPZONE_PREFIX);
+                var oldDropZone,
+                    newDropZone;
+                
+                for (var i = 0; i < dropZones.length; i++) {
+                    var dropZone = dropZones[i];
+                    if (!oldDropZone) {
+                        if (dropZone.isPointInsideArea(draggable._lastPosition)) {
+                            oldDropZone = dropZone;
+                            if (newDropZone) break;
                         }
-                         
-                    	else {
-                    		if(dz.isPointInsideArea(draggable._lastPosition)){
-    							dz._filled=dz._filled-draggable._length;
-                                //for all bars with index > this draggable, shift left by draggable's length
-                                var bars = self.getControls(DRAGGABLE_PREFIX);
-                                _.each(bars, function(bar) {
-                                    if(dz._filledArray.indexOf(bar.tag)>dz._filledArray.indexOf(draggable.tag)){
-                                        bar.setPosition((bar.getPosition().x)-(draggable._length*50),(bar.getPosition().y));
-                                    }
-                                });
-    							//splice array to remove that index.
-                                dz._filledArray.splice(dz._filledArray.indexOf(draggable.tag),1);
-    		         		}
-							draggable.setPosition(draggable._homePosition);
-							draggable.setScale(0.5);
-		         		
                     }
+                    if (!newDropZone) {
+                        if (dropZone.isPointInsideArea(position)) {
+                            newDropZone = dropZone;
+                            if (oldDropZone) break;
+                        }
+                    }
+                }
 
-                });
+                var moveToNewDropZone =
+                    newDropZone 
+                    && newDropZone != oldDropZone
+                    && draggable._length <= newDropZone._length - newDropZone._filled;
+
+                if (oldDropZone && (!newDropZone || moveToNewDropZone)) {
+                    // remove from oldDropZone if either sending home or migrating to another drop-zone
+                    var ix = oldDropZone._filledArray.indexOf(draggable)
+                    oldDropZone._filledArray.splice(ix, 1);
+                    oldDropZone._filled -= draggable._length;
+                    for (var i = ix; i < oldDropZone._filledArray.length; i++) {
+                        var bar = oldDropZone._filledArray[i];
+                        var oldPos = bar.getPosition();
+                        bar.setPosition(oldPos.x - draggable._length * 50, oldPos.y);
+                    }
+                }
+
+                if (moveToNewDropZone) {
+                    var dropZonePos = newDropZone.getPosition();
+                    draggable.setPosition(
+                        dropZonePos.x + newDropZone._filled * 50,
+                        dropZonePos.y);
+                    newDropZone._filledArray.push(draggable);
+                    newDropZone._filled += draggable._length;
+                    draggable.setScale(1);
+                } else {
+                    if (!newDropZone) {
+                        // send home
+                        draggable.setPosition(draggable._homePosition);
+                        draggable.setScale(0.5);
+                    } else {
+                        // send to prev pos
+                        draggable.setPosition(draggable._lastPosition);
+                        draggable.setScale(1);
+                    }
+                }
+
+
+      //           if (!newDropZone) {
+      //               if(oldDropZone)
+      //               // send home
+      //           } else {
+      //               if (newDropZone == oldDropZone || draggable._length > newDropZone._length - newDropZone._filled) {
+      //                   // send back to where it was before
+      //               } else {
+      //                   // place in new dropzone
+      //               }
+      //           }
+
+
+
+      //           if (newDropZone == oldDropZone) newDropZone = null;
+
+      //           if (newDropZone && ) {
+      //               newDropZone = null; // doesn't fit
+      //           }
+
+      //           if (newDropZone) {
+      //               if (oldDropZone) {
+
+      //               }
+      //           }
+
+      //           if (newDropZone) {
+      //               if (/* is in another dropzone*/) {
+      //                   // remove from previous dropzone
+      //               }
+      //               // add to new dropzone
+      //               draggable.setPosition((newDropZone.getPosition().x)+(newDropZone._filled*50),(newDropZone.getPosition().y));
+      //               draggable.setScale(1);
+      //               newDropZone._filled = newDropZone._filled + draggable._length;
+      //               newDropZone._filledArray.push(draggable);
+
+
+
+                    
+      //           } else {
+      //               // block has not been dropped over a drop-zone -> send home
+      //           }
+
+
+
+      //           _.each(dzs, function(dz) {
+      //               if (dz.isPointInsideArea(position)) {
+      //           		if (dz.isPointInsideArea(draggable._lastPosition)) { // is bar already in cage?
+      //           			draggable.setPosition(draggable._lastPosition);
+      //                       draggable.setScale(1);
+      //           	    } else if ((dz._filled+draggable._length) <= dz._length) { 
+      //                       //if the bar fits, add it!              	
+						// 	draggable.setPosition((dz.getPosition().x)+(dz._filled*50),(dz.getPosition().y));
+						// 	draggable.setScale(1);
+						// 	dz._filled=dz._filled+draggable._length;
+      //                       dz._filledArray.push(draggable);
+						// } else {//reject bar
+						// 	draggable.setPosition(draggable._homePosition);
+						// 	draggable.setScale(0.5);
+						// }
+      //               } else {
+      //               	if(dz.isPointInsideArea(draggable._lastPosition)) {
+      //   				   dz._filled=dz._filled-draggable._length;
+      //                       //for all bars with index > this draggable, shift left by draggable's length
                             
+      //                       var bars = self.getControls(DRAGGABLE_PREFIX);
+      //                       _.each(bars, function(bar) {
+      //                           if(dz._filledArray.indexOf(bar)>dz._filledArray.indexOf(draggable)){
+      //                               bar.setPosition((bar.getPosition().x)-(draggable._length*50),(bar.getPosition().y));
+      //                           }
+      //                       });
+      //   					//splice array to remove that index.
+      //                       dz._filledArray.splice(dz._filledArray.indexOf(draggable.tag),1);
+      //            		}
+      //   				draggable.setPosition(draggable._homePosition);
+      //   				draggable.setScale(0.5);
+      //               }
+      //           });                    
             });
+
             this._draggableLayer.addChild(dg);
             this.registerControl(DRAGGABLE_PREFIX + this._draggableCounter, dg);
             this._draggableCounter++;
@@ -163,6 +256,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             dz.setPosition(position.x, position.y);
             dz.setShape(shape);
             dz.setLabel(label);
+            dz.showArea();
             clc.addChild(dz);
             this.registerControl(DROPZONE_PREFIX + this._dropzoneCounter, dz);
             this.addChild(clc, DROPZONE_Z);
@@ -182,7 +276,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             throw {name : "NotImplementedError", message : "This needs implementing"};
         },
         
-        // add bars	
         setQuestion: function () {
             var self = this;
 
@@ -195,6 +288,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 { r: 98,   g: 0, b: 245, a: 255 },
                 { r: 225, g: 116, b: 172, a: 255 }];
 
+            // add bars 
             this._draggableLayer = DraggableLayer.create();
             self.addChild(self._draggableLayer);
 
@@ -205,28 +299,30 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     
                     var dg = self.addNumberBondsBar((i+1), cc.p(10, 600 - 55*i), l);
                 }
-                
-
             });
             
          //add dropzone                       
             var dz = this.addDropZone({
-                        x:400, y:145},
-                        [{x:0, y:0}, {x:0, y:500}, {x:300, y:500}, {x:300, y:0}],
-                        'cage');
-                    dz._label.setPosition(150,250);
+                        x:400, y:100},
+                        [{x:0, y:0}, {x:0, y:100}, {x:500, y:100}, {x:500, y:0}],
+                        '');
+                    dz._label.setPosition(0,0);
                     dz._label.setFontSize(50);
                     dz._filled = 0;
                     dz._filledArray = new Array(),
                     dz._length = 10;
-                    
-				
-                    
-          
 
-
-        }
-    });
+            var dz1 = this.addDropZone({
+                    x:400, y:300},
+                    [{x:0, y:0}, {x:0, y:100}, {x:500, y:100}, {x:500, y:0}],
+                    '');
+                dz1._label.setPosition(0,0);
+                dz1._label.setFontSize(50);
+                dz1._filled = 0;
+                dz1._filledArray = new Array(),
+                dz1._length = 10;
+            }
+        });
 
     ToolLayer.create = function () {
         var sg = new ToolLayer();
