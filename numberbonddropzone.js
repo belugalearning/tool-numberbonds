@@ -11,7 +11,7 @@ define(['cocos2d', 'bldrawnode', 'underscore'], function (cc, BLDrawNode, _) {
         _stackDraggables: false,
         _filled: undefined,
         _length: undefined,
-        _filledArray: undefined,
+        _filledArray:undefined,
 
         ctor: function() {
             this._super();

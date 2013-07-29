@@ -10,6 +10,11 @@ define(['cocos2d'], function (cc) {
         _homePosition: undefined,
         _length: undefined,
 
+        
+        returnToHomePosition: function () {
+            this.setPosition(this._homePosition);
+        },
+
     });
 
     return Draggable;

@@ -127,19 +127,15 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     	else {
                     		if(dz.isPointInsideArea(draggable._lastPosition)){
     							dz._filled=dz._filled-draggable._length;
-
-    							//for all bars with index > this draggable, shift left by draggable's length
-                                // for(var j=(1+indexOf(draggable.tag);j<dz._filledArray.length;j++){
-                                //     //translate dz._filledArray[j] left by length of draggable
-                                //     dz._filledArray[j].setPosition((dz._filledArray[j].getPosition().x)+(draggable._length*50),(dz.getPosition().y));
-
-                                // }
-                                //bars.setPosition((bars.getPosition().x)-(draggable._length*50),(bars.getPosition().y));
+                                //for all bars with index > this draggable, shift left by draggable's length
+                                var bars = self.getControls(DRAGGABLE_PREFIX);
+                                _.each(bars, function(bar) {
+                                    if(dz._filledArray.indexOf(bar.tag)>dz._filledArray.indexOf(draggable.tag)){
+                                        bar.setPosition((bar.getPosition().x)-(draggable._length*50),(bar.getPosition().y));
+                                    }
+                                });
     							//splice array to remove that index.
                                 dz._filledArray.splice(dz._filledArray.indexOf(draggable.tag),1);
-
-    						
-    							//+ need to make sure remaining bars get pushed to the left.
     		         		}
 							draggable.setPosition(draggable._homePosition);
 							draggable.setScale(0.5);
