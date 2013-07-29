@@ -1,7 +1,5 @@
 require.config({
     paths: {
-    'dropzone': '../../tools/numberbonds/numberbonddropzone',
-    'bars': '../../tools/numberbonds/bars'
     }
 });
 
@@ -11,7 +9,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
     var DRAGGABLE_PREFIX = 'DRAGGABLE_';
     var DROPZONE_PREFIX = 'DROPZONE_';
 
-    var BACKGROUND_Z = 0;
     var DROPZONE_Z = 1;
     var DRAGGABLE_Z = 1;
 
@@ -19,8 +16,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
     var Tool = ToolLayer.extend({
 
         _windowSize: undefined,
-        _background: undefined,
-        _backgroundLayer: undefined,
 
         init: function () {
             var self = this;
@@ -33,15 +28,13 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 
             cc.Director.getInstance().setDisplayStats(false);
 
-            this.setBackground(bl.getResource('bg'))
+            this.setBackground(bl.getResource('deep_water_background'))
 
             this.setQuestion()
             return this;
         },
 
         reset: function () {
-            this._background = undefined;
-            this._backgroundLayer = undefined;
             this._draggableCounter = 0;
             this._draggableLayer = undefined;
             this._prevDraggable = undefined;
@@ -49,17 +42,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             this._totalLabels = [];
             this._subTotalLabels = [];
             this._super();
-        },
-
-        setBackground: function (resource) {
-            if (_.isUndefined(this._background)) {
-                this._backgroundLayer = cc.Layer.create();
-                this.addChild(this._backgroundLayer, BACKGROUND_Z);
-                this._background = new cc.Sprite();
-            }
-            this._background.initWithFile(resource);
-            this._background.setPosition(this._windowSize.width/2, this._windowSize.height/2);
-            this._backgroundLayer.addChild(this._background);
         },
         
         _draggableCounter: 0,
@@ -84,7 +66,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             }
 			dg.setZoomOnTouchDown(false);
 			
-            dg.setPosition(position.x, position.y);
+            dg.setPosition(position);
 				
             dg.setScale(0.5);
             dg._length=length;
@@ -108,13 +90,13 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 for (var i = 0; i < dropZones.length; i++) {
                     var dropZone = dropZones[i];
                     if (!oldDropZone) {
-                        if (dropZone.isPointInsideArea(draggable._lastPosition)) {
+                        if (dropZone.containsPoint(draggable._lastPosition)) {
                             oldDropZone = dropZone;
                             if (newDropZone) break;
                         }
                     }
                     if (!newDropZone) {
-                        if (dropZone.isPointInsideArea(position)) {
+                        if (dropZone.containsPoint(position)) {
                             newDropZone = dropZone;
                             if (oldDropZone) break;
                         }
@@ -134,15 +116,15 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     for (var i = ix; i < oldDropZone._filledArray.length; i++) {
                         var bar = oldDropZone._filledArray[i];
                         var oldPos = bar.getPosition();
-                        bar.setPosition(oldPos.x - draggable._length * 50, oldPos.y);
+                        bar.setPosition(cc.p(oldPos.x - draggable._length * 50, oldPos.y));
                     }
                 }
 
                 if (moveToNewDropZone) {
                     var dropZonePos = newDropZone.getPosition();
-                    draggable.setPosition(
+                    draggable.setPosition(cc.p(
                         dropZonePos.x + newDropZone._filled * 50,
-                        dropZonePos.y);
+                        dropZonePos.y), true);
                     newDropZone._filledArray.push(draggable);
                     newDropZone._filled += draggable._length;
                     draggable.setScale(1);
@@ -157,85 +139,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                         draggable.setScale(1);
                     }
                 }
-
-
-      //           if (!newDropZone) {
-      //               if(oldDropZone)
-      //               // send home
-      //           } else {
-      //               if (newDropZone == oldDropZone || draggable._length > newDropZone._length - newDropZone._filled) {
-      //                   // send back to where it was before
-      //               } else {
-      //                   // place in new dropzone
-      //               }
-      //           }
-
-
-
-      //           if (newDropZone == oldDropZone) newDropZone = null;
-
-      //           if (newDropZone && ) {
-      //               newDropZone = null; // doesn't fit
-      //           }
-
-      //           if (newDropZone) {
-      //               if (oldDropZone) {
-
-      //               }
-      //           }
-
-      //           if (newDropZone) {
-      //               if (/* is in another dropzone*/) {
-      //                   // remove from previous dropzone
-      //               }
-      //               // add to new dropzone
-      //               draggable.setPosition((newDropZone.getPosition().x)+(newDropZone._filled*50),(newDropZone.getPosition().y));
-      //               draggable.setScale(1);
-      //               newDropZone._filled = newDropZone._filled + draggable._length;
-      //               newDropZone._filledArray.push(draggable);
-
-
-
-                    
-      //           } else {
-      //               // block has not been dropped over a drop-zone -> send home
-      //           }
-
-
-
-      //           _.each(dzs, function(dz) {
-      //               if (dz.isPointInsideArea(position)) {
-      //           		if (dz.isPointInsideArea(draggable._lastPosition)) { // is bar already in cage?
-      //           			draggable.setPosition(draggable._lastPosition);
-      //                       draggable.setScale(1);
-      //           	    } else if ((dz._filled+draggable._length) <= dz._length) { 
-      //                       //if the bar fits, add it!              	
-						// 	draggable.setPosition((dz.getPosition().x)+(dz._filled*50),(dz.getPosition().y));
-						// 	draggable.setScale(1);
-						// 	dz._filled=dz._filled+draggable._length;
-      //                       dz._filledArray.push(draggable);
-						// } else {//reject bar
-						// 	draggable.setPosition(draggable._homePosition);
-						// 	draggable.setScale(0.5);
-						// }
-      //               } else {
-      //               	if(dz.isPointInsideArea(draggable._lastPosition)) {
-      //   				   dz._filled=dz._filled-draggable._length;
-      //                       //for all bars with index > this draggable, shift left by draggable's length
-                            
-      //                       var bars = self.getControls(DRAGGABLE_PREFIX);
-      //                       _.each(bars, function(bar) {
-      //                           if(dz._filledArray.indexOf(bar)>dz._filledArray.indexOf(draggable)){
-      //                               bar.setPosition((bar.getPosition().x)-(draggable._length*50),(bar.getPosition().y));
-      //                           }
-      //                       });
-      //   					//splice array to remove that index.
-      //                       dz._filledArray.splice(dz._filledArray.indexOf(draggable.tag),1);
-      //            		}
-      //   				draggable.setPosition(draggable._homePosition);
-      //   				draggable.setScale(0.5);
-      //               }
-      //           });                    
+                   
             });
 
             this._draggableLayer.addChild(dg);
@@ -253,7 +157,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             } else {
                 dz.initWithFile(bgResource);
             }
-            dz.setPosition(position.x, position.y);
+            dz.setPosition(cc.p(position.x, position.y));
             dz.setShape(shape);
             dz.setLabel(label);
             dz.showArea();
@@ -297,7 +201,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     var l = new cc.LayerColor();
                     l.init(colour, 50*(i+1), 40);
                     
-                    var dg = self.addNumberBondsBar((i+1), cc.p(10, 600 - 55*i), l);
+                    var dg = self.addNumberBondsBar((i+1), cc.p(10, 55*i), l);
                 }
             });
             
@@ -306,7 +210,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                         x:400, y:100},
                         [{x:0, y:0}, {x:0, y:100}, {x:500, y:100}, {x:500, y:0}],
                         '');
-                    dz._label.setPosition(0,0);
+                    dz._label.setPosition(cc.p(0,0));
                     dz._label.setFontSize(50);
                     dz._filled = 0;
                     dz._filledArray = new Array(),
@@ -316,7 +220,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     x:400, y:300},
                     [{x:0, y:0}, {x:0, y:100}, {x:500, y:100}, {x:500, y:0}],
                     '');
-                dz1._label.setPosition(0,0);
+                dz1._label.setPosition(cc.p(0,0));
                 dz1._label.setFontSize(50);
                 dz1._filled = 0;
                 dz1._filledArray = new Array(),
