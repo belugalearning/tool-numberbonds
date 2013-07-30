@@ -12,6 +12,9 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
     var DROPZONE_Z = 1;
     var DRAGGABLE_Z = 1;
 
+    var unitlength = 50;
+    var homescale = 0.5;
+
     window.bl.toolTag = 'numberbonds';
     var Tool = ToolLayer.extend({
 
@@ -68,11 +71,11 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 			
             dg.setPosition(position);
 				
-            dg.setScale(0.5);
-            dg._length=length;
+            dg.setScale(homescale);
+            dg._length = length;
 
             dg.onMoved(function (position, draggable) {
-                draggable.setScale(Math.min(Math.max(0.01*position.x,0.5),1));
+                draggable.setScale(Math.min(Math.max((0.02 * homescale * position.x), homescale), 1));
                 self._draggableLayer.reorderChild(draggable, self._draggableCounter);
                 self._draggableLayer.sortAllChildren();
                 self._draggableLayer.reshuffleTouchHandlers();
@@ -116,29 +119,27 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     for (var i = ix; i < oldDropZone._filledArray.length; i++) {
                         var bar = oldDropZone._filledArray[i];
                         var oldPos = bar.getPosition();
-                        bar.setPosition(cc.p(oldPos.x - draggable._length * 50, oldPos.y));
+                        bar.setPosition(cc.p(oldPos.x - draggable._length * unitlength, oldPos.y));
                     }
                 }
 
                 if (moveToNewDropZone) {
                     var dropZonePos = newDropZone.getPosition();
                     draggable.setPosition(cc.p(
-                        dropZonePos.x + newDropZone._filled * 50,
+                        dropZonePos.x + newDropZone._filled * unitlength,
                         dropZonePos.y), true);
                     newDropZone._filledArray.push(draggable);
                     newDropZone._filled += draggable._length;
                     draggable.setScale(1);
+                } else if (oldDropZone && newDropZone) {
+                            draggable.setPosition(draggable._lastPosition);
+                            draggable.setScale(1);
                 } else {
-                    if (!newDropZone) {
-                        // send home
-                        draggable.setPosition(draggable._homePosition);
-                        draggable.setScale(0.5);
-                    } else {
-                        // send to prev pos
-                        draggable.setPosition(draggable._lastPosition);
-                        draggable.setScale(1);
-                    }
+                    // send to prev pos
+                    draggable.setPosition(draggable._homePosition);
+                    draggable.setScale(homescale);
                 }
+                
                    
             });
 
@@ -146,6 +147,23 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             this.registerControl(DRAGGABLE_PREFIX + this._draggableCounter, dg);
             this._draggableCounter++;
             return dg;
+        },
+
+        initCagedBars: function (){
+            //read in matrix with length + quantity columns
+
+            //for each row:
+            //make background
+            //call addNumberBondsBar 
+
+        },
+
+        initDropZoneBars: function (){
+            //read in matrix with lengths + dropzones
+
+            //call addNumberBondsBar with different position
+            //overwrite homePosition
+
         },
         
         _dropzoneCounter: 0,
@@ -174,6 +192,13 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             args.unshift(dz);
             return this._addDropZone.apply(this, args);
         },
+
+        initDropZones: function (){
+            //read in array with lengths
+
+            //call addDropZone
+
+        },
         
         
         getState: function () {
@@ -197,11 +222,11 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             self.addChild(self._draggableLayer);
 
             _.each(colours, function (colour, i) {
-                for(var j=1;j<11;j++){
+                for(var j = 1; j < 3; j++){
                     var l = new cc.LayerColor();
-                    l.init(colour, 50*(i+1), 40);
+                    l.init(colour, unitlength * (i + 1), 40);
                     
-                    var dg = self.addNumberBondsBar((i+1), cc.p(10, 55*i), l);
+                    var dg = self.addNumberBondsBar((i + 1), cc.p(10, (unitlength + 5) * (i + 1)), l);
                 }
             });
             
