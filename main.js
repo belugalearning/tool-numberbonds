@@ -112,8 +112,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     }
                 }
 
-                
-
                 if (oldDropZone) {
                     // remove from oldDropZone if either sending home or migrating to another drop-zone
                     var ix = oldDropZone._filledArray.indexOf(draggable);
@@ -140,8 +138,15 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     newDropZone._filled += draggable._length;
                     draggable.setScale(1);
                 } else if (oldDropZone && newDropZone) {
-                            draggable.setPosition(draggable._lastPosition);
-                            draggable.setScale(1);
+                    var oldDropZonePos = oldDropZone.getPosition();
+                    draggable.setPosition(cc.p(
+                        oldDropZonePos.x + oldDropZone._filled * unitlength,
+                        oldDropZonePos.y), true);
+                    oldDropZone._filledArray.push(draggable);
+                    oldDropZone._filled += draggable._length;
+                    draggable.setScale(1);
+                            // draggable.setPosition(draggable._lastPosition);
+                            // draggable.setScale(1);
                 } else {
                     // send to prev pos
                     draggable.setPosition(draggable._homePosition);
