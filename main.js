@@ -83,6 +83,12 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     self._draggableCounter++;
                 }
                 self._prevDraggable = draggable.tag;
+
+                //if in a dropzone
+                //remove it from filled array & filled length
+                //shift everything else right
+
+
             });
 
             dg.onMoveEnded(function (position, draggable) {
@@ -106,14 +112,11 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     }
                 }
 
-                var moveToNewDropZone =
-                    newDropZone 
-                    && newDropZone != oldDropZone
-                    && draggable._length <= newDropZone._length - newDropZone._filled;
+                
 
-                if (oldDropZone && (!newDropZone || moveToNewDropZone)) {
+                if (oldDropZone) {
                     // remove from oldDropZone if either sending home or migrating to another drop-zone
-                    var ix = oldDropZone._filledArray.indexOf(draggable)
+                    var ix = oldDropZone._filledArray.indexOf(draggable);
                     oldDropZone._filledArray.splice(ix, 1);
                     oldDropZone._filled -= draggable._length;
                     for (var i = ix; i < oldDropZone._filledArray.length; i++) {
@@ -122,6 +125,11 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                         bar.setPosition(cc.p(oldPos.x - draggable._length * unitlength, oldPos.y));
                     }
                 }
+
+                var moveToNewDropZone =
+                    newDropZone 
+                    //&& newDropZone != oldDropZone
+                    && draggable._length <= newDropZone._length - newDropZone._filled;
 
                 if (moveToNewDropZone) {
                     var dropZonePos = newDropZone.getPosition();
