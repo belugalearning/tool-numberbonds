@@ -39,7 +39,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 bars:[
                     {
                         unit: 1,
-                        quantity: 10,
+                        quantity: 0,
                         colour: { r: 231, g: 0,     b: 0,   a: 255 }
                     },
                     {
@@ -398,7 +398,11 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 //add to filledArray etc
                 dropZone._filledArray.push(dg);
                 dropZone._filled += dg._length;
-                dg.setScale(1);               
+                dg.setScale(1);
+
+                //overwrite homeposition
+                dg._homePosition = cc.p(10, (barheight + 5) * bar.unit);
+
             });
 
 
