@@ -95,7 +95,10 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     },
                     {
                         unit: 10
-                    }                     
+                    },
+                    {
+                        unit: 10
+                    }                       
                 ],
 
                 barsInDropZone:[
@@ -162,7 +165,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             dg._length = length;
 
             dg.onMoved(function (position, draggable) {
-                draggable.setScale(Math.min(Math.max((0.02 * homescale * position.x), homescale), 1));
+                draggable.setScale(Math.min(Math.max((0.0075 * homescale * position.x), homescale), 1));
                 self._draggableLayer.reorderChild(draggable, self._draggableCounter);
                 self._draggableLayer.sortAllChildren();
                 self._draggableLayer.reshuffleTouchHandlers();
@@ -198,6 +201,12 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     var ix = oldDropZone._filledArray.indexOf(draggable);
                     oldDropZone._filledArray.splice(ix, 1);
                     oldDropZone._filled -= draggable._length;
+
+                    //change label for dropzone
+                    var total = oldDropZone._filled.toString();
+                    console.log('total' + total);
+                    oldDropZone._label._string = total.toString();
+
                     for (var i = ix; i < oldDropZone._filledArray.length; i++) {
                         var bar = oldDropZone._filledArray[i];
                         var oldPos = bar.getPosition();
@@ -219,6 +228,12 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 
                     newDropZone._filledArray.push(draggable);
                     newDropZone._filled += draggable._length;
+
+                    //change label for dropzone
+                    var total = newDropZone._filled.toString();
+                    console.log('total' + total);
+                    newDropZone._label._string = total.toString();
+
                     draggable.setScale(1);
 
                 } else if (oldDropZone && newDropZone) {
@@ -231,6 +246,12 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     
                     oldDropZone._filledArray.push(draggable);
                     oldDropZone._filled += draggable._length;
+
+                    //change label for dropzone
+                    var total = oldDropZone._filled.toString();
+                    console.log('total' + total);
+                    oldDropZone._label._string = total.toString();
+
                     draggable.setScale(1);
                     
                 } else {
@@ -320,7 +341,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 
             //add dropzone
             var margin = (600 - barheight * question.containers.length)/(question.containers.length + 1);
-            console.log(question.containers.length, margin);
 
             _.each(question.containers, function (container, i){
 
@@ -332,12 +352,16 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                                 {x:unitlength * container.unit, y:barheight},
                                 {x:unitlength * container.unit, y:0}
                             ],
-                        '');
-                    dz._label.setPosition(cc.p(0,0));
-                    dz._label.setFontSize(50);
+                        'label');
+                    dz._label.setPosition(cc.p((unitlength * container.unit), barheight/2));
+                    dz._label.setFontSize(30);
                     dz._filled = 0;
-                    dz._filledArray = new Array(),
+                    dz._filledArray = new Array();
                     dz._length = container.unit;
+                    var total = dz._filled.toString();
+                    console.log('total' + total);
+                    dz._label._string = total.toString();
+                    
             });
        
             // add bars 
@@ -350,7 +374,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     var l = new cc.LayerColor();
                     l.init(colours[bar.unit - 1], unitlength * bar.unit, barheight);
                     
-                    var dg = self.addNumberBondsBar(bar.unit, cc.p(10 + (unitlength * bar.unit)/4, (barheight) * bar.unit), l);
+                    var dg = self.addNumberBondsBar(bar.unit, cc.p(10 + (unitlength * bar.unit)/4, (barheight/1.2) * bar.unit), l);
                 }
             });         
 
@@ -370,10 +394,16 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 //add to filledArray etc
                 dropZone._filledArray.push(dg);
                 dropZone._filled += dg._length;
+
+                //change label for dropzone
+                var total = dropZone._filled.toString();
+                console.log('total' + total);
+                dropZone._label._string = total.toString();
+
                 dg.setScale(1);
 
                 //overwrite homeposition to dock
-                dg._homePosition = cc.p(10 + (unitlength * bar.unit)/4, (barheight) * bar.unit)
+                dg._homePosition = cc.p(10 + (unitlength * bar.unit)/4, (barheight/1.2) * bar.unit);
 
             });
         }
