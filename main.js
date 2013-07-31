@@ -17,6 +17,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
     var unitlength = 50;
     var homescale = 0.5;
 
+    var displaymultiplier = 1.5;
+
     window.bl.toolTag = 'numberbonds';
     var Tool = ToolLayer.extend({
 
@@ -141,7 +143,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
         _draggableLayer: undefined,
         _prevDraggable: undefined,
                 
-        addNumberBondsBar: function(length, position, resource){
+        addNumberBondsBar: function(length, position, resource, colour){
             var self = this;
 
             if (_.isUndefined(this._draggableLayer)) {
@@ -164,6 +166,10 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             dg.setScale(homescale);
             dg._length = length;
 
+            //make label - if bar is white, make label black
+            var value = dg._length * displaymultiplier;
+            dg.setLabel(value);
+            
             dg.onMoved(function (position, draggable) {
                 draggable.setScale(Math.min(Math.max((0.0075 * homescale * position.x), homescale), 1));
                 self._draggableLayer.reorderChild(draggable, self._draggableCounter);
@@ -199,13 +205,11 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 if (oldDropZone) {
                     // remove from oldDropZone if either sending home or migrating to another drop-zone
                     var ix = oldDropZone._filledArray.indexOf(draggable);
+
+                    //update info on what's in dropzone & change label
                     oldDropZone._filledArray.splice(ix, 1);
                     oldDropZone._filled -= draggable._length;
-
-                    //change label for dropzone
-                    var total = oldDropZone._filled.toString();
-                    console.log('total' + total);
-                    oldDropZone._label._string = total.toString();
+                    oldDropZone._label._string = oldDropZone._filled * displaymultiplier;
 
                     for (var i = ix; i < oldDropZone._filledArray.length; i++) {
                         var bar = oldDropZone._filledArray[i];
@@ -226,13 +230,10 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                         dropZonePos.x + newDropZone._filled * unitlength,
                         dropZonePos.y), true);
 
+                    //update info on what's in dropzone & change label
                     newDropZone._filledArray.push(draggable);
                     newDropZone._filled += draggable._length;
-
-                    //change label for dropzone
-                    var total = newDropZone._filled.toString();
-                    console.log('total' + total);
-                    newDropZone._label._string = total.toString();
+                    newDropZone._label._string = newDropZone._filled * displaymultiplier;
 
                     draggable.setScale(1);
 
@@ -243,14 +244,12 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     draggable.setPosition(cc.p(
                         oldDropZonePos.x + oldDropZone._filled * unitlength,
                         oldDropZonePos.y), true);
-                    
+
+                    //update info on what's in dropzone & change label
                     oldDropZone._filledArray.push(draggable);
                     oldDropZone._filled += draggable._length;
+                    oldDropZone._label._string = oldDropZone._filled * displaymultiplier;
 
-                    //change label for dropzone
-                    var total = oldDropZone._filled.toString();
-                    console.log('total' + total);
-                    oldDropZone._label._string = total.toString();
 
                     draggable.setScale(1);
                     
@@ -335,7 +334,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 { r: 98,  g: 0,     b: 245, a: 255 },
                 { r: 225, g: 116,   b: 172, a: 255 },
                 { r: 0, g: 0,   b: 0, a: 255 },
-                { r: 255, g: 255,   b: 255, a: 255 },
+                { r: 75, g: 75,   b: 75, a: 255 },
                 { r: 150, g: 150,   b: 150, a: 255 }
             ]
 
@@ -353,28 +352,45 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                                 {x:unitlength * container.unit, y:0}
                             ],
                         'label');
-                    dz._label.setPosition(cc.p((unitlength * container.unit), barheight/2));
+                    dz._label.setPosition(cc.p((margin + unitlength * container.unit), barheight/2));
                     dz._label.setFontSize(30);
                     dz._filled = 0;
                     dz._filledArray = new Array();
                     dz._length = container.unit;
-                    var total = dz._filled.toString();
-                    console.log('total' + total);
-                    dz._label._string = total.toString();
+                    dz._label._string = dz._filled * displaymultiplier;
                     
             });
+
+            
        
-            // add bars 
+            // add bars in dock
             this._draggableLayer = DraggableLayer.create();
             self.addChild(self._draggableLayer);
 
             _.each(question.bars, function (bar, i) {
 
+                // // add dock dropzone
+                // var dz = self.addDropZone({
+                //             x:10 , y:(barheight/1.2) * bar.unit - barheight/4},
+                //             [
+                //                 {x:0, y:0},
+                //                 {x:0, y:barheight/2},
+                //                 {x:unitlength * bar.unit/2, y:barheight/2},
+                //                 {x:unitlength * bar.unit/2, y:0}
+                //             ],
+                //         'label');
+                //     dz._label.setPosition(cc.p (unitlength * bar.unit/2, barheight/4) );
+                //     dz._label.setFontSize(15);
+                //     dz._filled = 0;
+                //     dz._filledArray = new Array();
+                //     dz._length = bar.unit;
+                //     dz._label._string = 'x' + bar.quantity;
+
                 for(var j = 0; j < bar.quantity; j++){
                     var l = new cc.LayerColor();
                     l.init(colours[bar.unit - 1], unitlength * bar.unit, barheight);
                     
-                    var dg = self.addNumberBondsBar(bar.unit, cc.p(10 + (unitlength * bar.unit)/4, (barheight/1.2) * bar.unit), l);
+                    var dg = self.addNumberBondsBar(bar.unit, cc.p(10 + (unitlength * bar.unit)/4, (barheight/1.2) * bar.unit), l, colours[bar.unit - 1]);
                 }
             });         
 
@@ -390,15 +406,14 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 l.init(colours[bar.unit - 1], unitlength * bar.unit, barheight);
 
                 var dg = self.addNumberBondsBar(bar.unit, cc.p(dropZonePos.x + (dropZone._filled +bar.unit/2)* unitlength, dropZonePos.y + barheight/2), l);
+                
 
                 //add to filledArray etc
                 dropZone._filledArray.push(dg);
                 dropZone._filled += dg._length;
 
                 //change label for dropzone
-                var total = dropZone._filled.toString();
-                console.log('total' + total);
-                dropZone._label._string = total.toString();
+                dropZone._label._string = dropZone._filled * displaymultiplier;
 
                 dg.setScale(1);
 
