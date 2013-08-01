@@ -17,7 +17,11 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
     var unitlength = 50;
     var homescale = 0.5;
 
-    var displaymultiplier = 1.5;
+    var displaymultiplier = 1;
+
+    var docklabelvalues = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    var docklabels = new Array ();
+
 
     window.bl.toolTag = 'numberbonds';
     var Tool = ToolLayer.extend({
@@ -36,6 +40,15 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             cc.Director.getInstance().setDisplayStats(false);
 
             this.setBackground(bl.getResource('deep_water_background'))
+
+            //dock labels
+            for(var i = 0; i<10; i++){
+                docklabels[i] = cc.LabelTTF.create('x ' + docklabelvalues[i], "mikadoBold", 15);
+                docklabels[i]._position = (cc.p(15, (barheight/1.2) * (i+1)));
+                self.addChild(docklabels[i]);
+                
+            }
+
 
             var question = {
                 bars:[
@@ -169,6 +182,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             //make label - if bar is white, make label black
             var value = dg._length * displaymultiplier;
             dg.setLabel(value);
+            dg._label.setFontSize(25);
             
             dg.onMoved(function (position, draggable) {
                 draggable.setScale(Math.min(Math.max((0.0075 * homescale * position.x), homescale), 1));
@@ -217,6 +231,11 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                         bar.setPosition(cc.p(oldPos.x - draggable._length * unitlength, oldPos.y));
                     }
                 }
+                //otherwise, bar was in dock - change dock count + label
+                else{
+                        docklabelvalues[draggable._length - 1]--;
+                        docklabels[draggable._length - 1]._string ='x ' + docklabelvalues[draggable._length - 1];
+                }
 
                 var moveToNewDropZone =
                     newDropZone 
@@ -237,6 +256,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 
                     draggable.setScale(1);
 
+                    
+
                 } else if (oldDropZone && newDropZone) {
                     //put it back in its old drop zone
                     var oldDropZonePos = oldDropZone.getPosition();
@@ -250,13 +271,15 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     oldDropZone._filled += draggable._length;
                     oldDropZone._label._string = oldDropZone._filled * displaymultiplier;
 
-
                     draggable.setScale(1);
                     
                 } else {
-                    // send to home
+                    // send to home - change dock count + label
                     draggable.setPosition(draggable._homePosition);
                     draggable.setScale(homescale);
+                    docklabelvalues[draggable._length - 1]++;
+                    docklabels[draggable._length - 1]._string ='x ' + docklabelvalues[draggable._length - 1];
+
                 }
             });
 
@@ -338,6 +361,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 { r: 150, g: 150,   b: 150, a: 255 }
             ]
 
+            
+
             //add dropzone
             var margin = (600 - barheight * question.containers.length)/(question.containers.length + 1);
 
@@ -352,7 +377,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                                 {x:unitlength * container.unit, y:0}
                             ],
                         'label');
-                    dz._label.setPosition(cc.p((margin + unitlength * container.unit), barheight/2));
+                    dz._label.setPosition(cc.p((2 * margin + unitlength * container.unit), barheight/2));
                     dz._label.setFontSize(30);
                     dz._filled = 0;
                     dz._filledArray = new Array();
@@ -364,34 +389,20 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             
        
             // add bars in dock
+
+
             this._draggableLayer = DraggableLayer.create();
             self.addChild(self._draggableLayer);
 
-            _.each(question.bars, function (bar, i) {
-
-                // // add dock dropzone
-                // var dz = self.addDropZone({
-                //             x:10 , y:(barheight/1.2) * bar.unit - barheight/4},
-                //             [
-                //                 {x:0, y:0},
-                //                 {x:0, y:barheight/2},
-                //                 {x:unitlength * bar.unit/2, y:barheight/2},
-                //                 {x:unitlength * bar.unit/2, y:0}
-                //             ],
-                //         'label');
-                //     dz._label.setPosition(cc.p (unitlength * bar.unit/2, barheight/4) );
-                //     dz._label.setFontSize(15);
-                //     dz._filled = 0;
-                //     dz._filledArray = new Array();
-                //     dz._length = bar.unit;
-                //     dz._label._string = 'x' + bar.quantity;
-
+            _.each(question.bars, function (bar, i) {             
                 for(var j = 0; j < bar.quantity; j++){
                     var l = new cc.LayerColor();
                     l.init(colours[bar.unit - 1], unitlength * bar.unit, barheight);
                     
-                    var dg = self.addNumberBondsBar(bar.unit, cc.p(10 + (unitlength * bar.unit)/4, (barheight/1.2) * bar.unit), l, colours[bar.unit - 1]);
+                    var dg = self.addNumberBondsBar(bar.unit, cc.p(40 + (unitlength * bar.unit)/4, (barheight/1.2) * bar.unit), l, colours[bar.unit - 1]);
+                    docklabelvalues[bar.unit - 1]++;
                 }
+                docklabels[bar.unit - 1]._string ='x ' + docklabelvalues[bar.unit - 1];
             });         
 
             //add bars in dropzone
@@ -407,7 +418,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 
                 var dg = self.addNumberBondsBar(bar.unit, cc.p(dropZonePos.x + (dropZone._filled +bar.unit/2)* unitlength, dropZonePos.y + barheight/2), l);
                 
-
                 //add to filledArray etc
                 dropZone._filledArray.push(dg);
                 dropZone._filled += dg._length;
@@ -418,10 +428,16 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 dg.setScale(1);
 
                 //overwrite homeposition to dock
-                dg._homePosition = cc.p(10 + (unitlength * bar.unit)/4, (barheight/1.2) * bar.unit);
+                dg._homePosition = cc.p(40 + (unitlength * bar.unit)/4, (barheight/1.2) * bar.unit);
 
             });
+
+            
+
+
+
         }
+
     });
 
     ToolLayer.create = function () {
