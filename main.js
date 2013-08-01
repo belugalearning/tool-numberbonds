@@ -22,6 +22,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
     var docklabelvalues = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     var docklabels = new Array ();
 
+    var cagepadding = 5;
+
 
     window.bl.toolTag = 'numberbonds';
     var Tool = ToolLayer.extend({
@@ -116,11 +118,11 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 barsInDropZone:[
                     {
                         unit: 1,
-                        dropzone: 1
+                        dropzone: 3
                     },
                     {
                         unit: 2,
-                        dropzone: 1
+                        dropzone: 3
                     },
                     {
                         unit: 1,
@@ -128,7 +130,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     },
                     {
                         unit: 10,
-                        dropzone: 5
+                        dropzone: 1
                     }
 
                 ]
@@ -190,6 +192,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     self._draggableCounter++;
                 }
                 self._prevDraggable = draggable.tag;
+
             });
 
             dg.onMoveEnded(function (position, draggable) {
@@ -243,8 +246,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     var dropZonePos = newDropZone.getPosition();
                     
                     draggable.setPosition(cc.p(
-                        dropZonePos.x + newDropZone._filled * unitlength,
-                        dropZonePos.y), true);
+                        cagepadding + dropZonePos.x + newDropZone._filled * unitlength,
+                        cagepadding + dropZonePos.y), true);
 
                     //update info on what's in dropzone & change label
                     newDropZone._filledArray.push(draggable);
@@ -253,19 +256,16 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 
                     draggable.setScale(1);
 
-                    //check if all full
+                    //check if all full, i.e. check if complete
                     for(i = 0; i < question.containers.length; i++){
                         if(dropZones[i]._filled != dropZones[i]._length){
                             var check = 1;
+                            break;
                         }
                     }
-
                     if(check != 1){
                         console.log('complete!');
                     }
-                    
-
-                    
 
                 } else if (oldDropZone && newDropZone) {
                     //put it back in its old drop zone
@@ -369,16 +369,16 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 { r: 75, g: 75,   b: 75, a: 255 },
                 { r: 150, g: 150,   b: 150, a: 255 },
                 //LOCKED bar colours
-                { r: 231, g: 0,     b: 0,   a: 175 },
-                { r: 245, g: 94,    b: 0,   a: 175 },
-                { r: 247, g: 204,   b: 0,   a: 175 },
-                { r: 0,   g: 183,   b: 0,   a: 175 },
-                { r: 0,   g: 170,   b: 234, a: 175 },
-                { r: 98,  g: 0,     b: 245, a: 175 },
-                { r: 225, g: 116,   b: 172, a: 175 },
-                { r: 0, g: 0,   b: 0, a: 175 },
-                { r: 75, g: 75,   b: 75, a: 175 },
-                { r: 150, g: 150,   b: 150, a: 175 }
+                { r: 231, g: 0,     b: 0,   a: 150 },
+                { r: 245, g: 94,    b: 0,   a: 150 },
+                { r: 247, g: 204,   b: 0,   a: 150 },
+                { r: 0,   g: 183,   b: 0,   a: 150 },
+                { r: 0,   g: 170,   b: 234, a: 150 },
+                { r: 98,  g: 0,     b: 245, a: 150 },
+                { r: 225, g: 116,   b: 172, a: 150 },
+                { r: 0, g: 0,   b: 0, a: 150 },
+                { r: 75, g: 75,   b: 75, a: 150 },
+                { r: 150, g: 150,   b: 150, a: 150 }
             ]
 
             //add dropzone
@@ -387,12 +387,12 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             _.each(question.containers, function (container, i){
 
                 var dz = self.addDropZone({
-                            x:400, y:margin + i * (barheight + margin)},
+                            x:395, y:margin + (question.containers.length - 1 -i) * (barheight + margin)},
                             [
                                 {x:0, y:0},
-                                {x:0, y:barheight},
-                                {x:unitlength * container.unit, y:barheight},
-                                {x:unitlength * container.unit, y:0}
+                                {x:0, y:barheight + 2 * cagepadding},
+                                {x:unitlength * container.unit + 2 * cagepadding, y:barheight + 2 * cagepadding},
+                                {x:unitlength * container.unit + 2 * cagepadding, y:0}
                             ],
                         'label');
                     dz._label.setPosition(cc.p((2 * margin + unitlength * container.unit), barheight/2));
@@ -429,7 +429,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 //make bar
                 var l = new cc.LayerColor();
                 l.init(colours[bar.unit + 9], unitlength * bar.unit, barheight);
-                var dg = self.addNumberBondsBar(bar.unit, cc.p(dropZonePos.x + (dropZone._filled +bar.unit/2)* unitlength, dropZonePos.y + barheight/2), l);             
+                var dg = self.addNumberBondsBar(bar.unit, cc.p(cagepadding + dropZonePos.x + (dropZone._filled +bar.unit/2)* unitlength, cagepadding + dropZonePos.y + barheight/2), l);             
                 
                 //add to filledArray etc
                 dropZone._filledArray.push(dg);
@@ -439,8 +439,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 dg.setScale(1);
                 //lock these bars
                 dg._isTouchEnabled = false;
-                //overwrite homeposition to dock
-                dg._homePosition = cc.p(40 + (unitlength * bar.unit)/4, (barheight/1.2) * bar.unit);
+                //overwrite homeposition to dock - no need for this anymore if bars are automatically locked
+                //dg._homePosition = cc.p(40 + (unitlength * bar.unit)/4, (barheight/1.2) * bar.unit);
 
             });
         }
