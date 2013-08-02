@@ -9,9 +9,8 @@ define(['cocos2d', 'draggable'], function (cc, Draggable) {
 
         _length: undefined,
 
-        ctor:function(length, multiplier, resource) {
+        ctor:function(length, multiplier, resource, fixed) {
             this._super();
-            this.setZoomOnTouchDown(false);
             
             this._length = length;
             
@@ -20,7 +19,7 @@ define(['cocos2d', 'draggable'], function (cc, Draggable) {
             } else {
                 this.initWithFile(resource);
             }
-
+            this.setZoomOnTouchDown(false);
             this.setLabel(length * multiplier);
             
         },

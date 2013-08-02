@@ -18,7 +18,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
     var unitlength = 50;
     var homescale = 0.5;
 
-    var displaymultiplier = 1;
+    var displaymultiplier = 3;
 
     var docklabelvalues = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     var docklabels = new Array ();
@@ -172,8 +172,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             dg.setPosition(position);
 				
             dg.setScale(homescale);
-            
-            
           
             dg.onMoved(function (position, draggable) {
                 var endpoint = position.x - draggable._contentSize.width/2;
