@@ -25,7 +25,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 
     var cagepadding = 5;
 
-
     window.bl.toolTag = 'numberbonds';
     var Tool = ToolLayer.extend({
 
@@ -54,16 +53,16 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             var newQuestion = {
                         tool: 'number_bonds',
                         spawnPoints: [
-                            { value: 1, limit: false, mathml: '<cn>1</cn>' },
-                            { value: 2, limit: false, mathml: '<cn>2</cn>' },
-                            { value: 3, limit: false, mathml: '<cn>3</cn>' },
-                            { value: 4, limit: false, mathml: '<cn>4</cn>' },
-                            { value: 5, limit: false, mathml: '<cn>5</cn>' },
-                            { value: 6, limit: false, mathml: '<cn>6</cn>' },
-                            { value: 7, limit: false, mathml: '<cn>7</cn>' },
-                            { value: 8, limit: false, mathml: '<cn>8</cn>' },
-                            { value: 9, limit: false, mathml: '<cn>9</cn>' },
-                            { value: 10, limit: false, mathml: '<cn>9</cn>' }
+                          { value: 1, limit: false, mathml: '<cn>1</cn>' },
+                          { value: 2, limit: 2, mathml: '<cn>2</cn>' },
+                          { value: 3, limit: 3, mathml: '<cn>3</cn>' },
+                          { value: 4, limit: false, mathml: '<cn>4</cn>' },
+                          { value: 5, limit: false, mathml: '<cn>5</cn>' },
+                          { value: 6, limit: false, mathml: '<cn>6</cn>' },
+                          { value: 7, limit: false, mathml: '<cn>7</cn>' },
+                          { value: 8, limit: false, mathml: '<cn>8</cn>' },
+                          { value: 9, limit: false, mathml: '<cn>9</cn>' },
+                          { value: 10, limit: false, mathml: '<cn>10</cn>' }
                         ],
                         symbols: {
                           lists: {
@@ -74,8 +73,26 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                               mathml: '<list><members><csymbol definitionURL="local://symbols/bars/bar0" /><csymbol definitionURL="local://symbols/bars/bar1" /></members></list>'
                             },
                             list1: {
-                              definitionURL: 'local://symbols/lists/list1',
+                              definitionURL: 'local://symbols/lists/list0',
                               capacity: 11,
+                              locked: true,
+                              mathml: '<list><members></members></list>'
+                            },
+                            list3: {
+                              definitionURL: 'local://symbols/lists/list0',
+                              capacity: 11,
+                              locked: true,
+                              mathml: '<list><members></members></list>'
+                            },
+                            list4: {
+                              definitionURL: 'local://symbols/lists/list0',
+                              capacity: 11,
+                              locked: true,
+                              mathml: '<list><members></members></list>'
+                            },
+                            list2: {
+                              definitionURL: 'local://symbols/lists/list1',
+                              capacity: 10,
                               locked: false,
                               mathml: '<list><members><csymbol definitionURL="local://symbols/bars/bar2" /></members></list>'
                             }
@@ -102,94 +119,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                         state: '<state><csymbol definitionURL="local://symbols/lists/list0" /><csymbol definitionURL="local://symbols/lists/list1" /></state>',
                       }
 
-            var question = {
-                bars:[
-                    {
-                        unit: 1,
-                        quantity: 10
-                    },
-                    {
-                        unit: 2,
-                        quantity: 5
-                    },
-                    {
-                        unit: 3,
-                        quantity: 3
-                    },
-                    {
-                        unit: 4,
-                        quantity: 2
-                    },
-                    {
-                        unit: 5,
-                        quantity: 2
-                    },
-                    {
-                        unit: 6,
-                        quantity: 1
-                    },
-                    {
-                        unit: 7,
-                        quantity: 1
-                    },
-                    {
-                        unit: 8,
-                        quantity: 1
-                    },
-                    {
-                        unit: 9,
-                        quantity: 1
-                    },
-                    {
-                        unit: 10,
-                        quantity: 1
-                    }
-
-                ],
-
-                containers:[
-                    {
-                        unit: 10,
-                    },
-                    {
-                        unit: 10
-                    },
-                    {
-                        unit: 10
-                    },
-                    {
-                        unit: 10
-                    },
-                    {
-                        unit: 10
-                    },
-                    {
-                        unit: 10
-                    }                        
-                ],
-
-                barsInDropZone:[
-                    {
-                        unit: 1,
-                        dropzone: 3
-                    },
-                    {
-                        unit: 2,
-                        dropzone: 3
-                    },
-                    {
-                        unit: 1,
-                        dropzone: 2
-                    },
-                    {
-                        unit: 10,
-                        dropzone: 1
-                    }
-
-                ]
-
-            }
-
             this.setQuestion(newQuestion)
             return this;
         },
@@ -208,7 +137,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
         _draggableLayer: undefined,
         _prevDraggable: undefined,
                 
-                addNumberBondsBar: function(length, position, question, locked){
+        addNumberBondsBar: function(length, position, question, locked){
             var self = this;
 
             if (_.isUndefined(this._draggableLayer)) {
@@ -222,7 +151,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             dg.tag = 'dg-' + this._draggableCounter;
             
             dg.setPosition(position);
-                
+				
             dg.setScale(homescale);
           
             dg.onMoved(function (position, draggable) {
@@ -240,7 +169,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 
             dg.onMoveEnded(function (position, draggable) {
 
-                var dropZones = self.getControls(DROPZONE_PREFIX);
+ 				var dropZones = self.getControls(DROPZONE_PREFIX);
                 var oldDropZone,
                     newDropZone;
 
@@ -417,28 +346,32 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
         setQuestion: function (question) {
             var self = this;
 
-            // //add dropzone
-            // var margin = (600 - barheight * question.containers.length)/(question.containers.length + 1);
+            //add dropzone
+            var margin = (600 - barheight * Object.keys(question.symbols.lists).length)/(Object.keys(question.symbols.lists).length + 1);
+            console.log(margin);
 
-            // _.each(question.containers, function (container, i){
-
-            //     var dz = self.addDropZone({
-            //         x:400, y:margin + (question.containers.length - 1 -i) * (barheight + margin)},
-            //         [
-            //             {x:0, y:0},
-            //             {x:0, y:barheight + 2 * cagepadding},
-            //             {x:unitlength * container.unit + 2 * cagepadding, y:barheight + 2 * cagepadding},
-            //             {x:unitlength * container.unit + 2 * cagepadding, y:0}
-            //         ],
-            //         'label');
-            //     dz._label.setPosition(cc.p((2 * margin + unitlength * container.unit), barheight/2));
-            //     dz._label.setFontSize(30);
-            //     dz._filled = 0;
-            //     dz._filledArray = new Array();
-            //     dz._length = container.unit;
-            //     dz._label._string = dz._filled * displaymultiplier;
+            _.each(question.symbols.lists, function (container, i){
+                //extract index from 'list0/1/2...'
+                i = parseInt(i.slice(4));
+                console.log(i);
+                console.log(600 + margin + (Object.keys(question.symbols.lists).length - 1 - i) * (barheight + margin));
+                var dz = self.addDropZone({
+                    x:400, y:margin + (Object.keys(question.symbols.lists).length - 1 - i) * (barheight + margin)},
+                    [
+                        {x:0, y:0},
+                        {x:0, y:barheight + 2 * cagepadding},
+                        {x:unitlength * container.capacity + 2 * cagepadding, y:barheight + 2 * cagepadding},
+                        {x:unitlength * container.capacity + 2 * cagepadding, y:0}
+                    ],
+                    'label');
+                dz._label.setPosition(cc.p((2 * margin + unitlength * container.capacity - 30), barheight/2));
+                dz._label.setFontSize(30);
+                dz._filled = 0;
+                dz._filledArray = new Array();
+                dz._length = container.capacity;
+                dz._label._string = dz._filled * displaymultiplier;
                     
-            // });
+            });
        
             // add bars in dock
             this._draggableLayer = DraggableLayer.create();
@@ -474,7 +407,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     docklabelvalues[bar.value - 1] ='inf';
                     docklabels[bar.value - 1]._string ='inf';
                 }
-            });          
+            });         
 
             // //add bars in dropzone
             // _.each(question.barsInDropZone, function (bar, i){
