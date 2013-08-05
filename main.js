@@ -13,12 +13,12 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
     var DROPZONE_Z = 0;
     var DRAGGABLE_Z = 1;
 
-    var barheight = 50;
+    var barheight = 55;
 
     var unitlength = 50;
     var homescale = 0.5;
 
-    var displaymultiplier = 3;
+    var displaymultiplier = 1;
 
     var docklabelvalues = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     var docklabels = new Array ();
@@ -47,9 +47,61 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             //dock labels
             for(var i = 0; i<10; i++){
                 docklabels[i] = cc.LabelTTF.create('x ' + docklabelvalues[i], "mikadoBold", 15);
-                docklabels[i]._position = (cc.p(15, 50 + (barheight/1.2) * (i+1)));
+                docklabels[i]._position = (cc.p(15, 50 + (barheight/1.2) * (i + 1)));
                 self.addChild(docklabels[i]);
             }
+
+            var newQuestion = {
+                        tool: 'number_bonds',
+                        spawnPoints: [
+                            { value: 1, limit: false, mathml: '<cn>1</cn>' },
+                            { value: 2, limit: false, mathml: '<cn>2</cn>' },
+                            { value: 3, limit: false, mathml: '<cn>3</cn>' },
+                            { value: 4, limit: false, mathml: '<cn>4</cn>' },
+                            { value: 5, limit: false, mathml: '<cn>5</cn>' },
+                            { value: 6, limit: false, mathml: '<cn>6</cn>' },
+                            { value: 7, limit: false, mathml: '<cn>7</cn>' },
+                            { value: 8, limit: false, mathml: '<cn>8</cn>' },
+                            { value: 9, limit: false, mathml: '<cn>9</cn>' },
+                            { value: 10, limit: false, mathml: '<cn>9</cn>' }
+                        ],
+                        symbols: {
+                          lists: {
+                            list0: {
+                              definitionURL: 'local://symbols/lists/list0',
+                              capacity: 11,
+                              locked: true,
+                              mathml: '<list><members><csymbol definitionURL="local://symbols/bars/bar0" /><csymbol definitionURL="local://symbols/bars/bar1" /></members></list>'
+                            },
+                            list1: {
+                              definitionURL: 'local://symbols/lists/list1',
+                              capacity: 11,
+                              locked: false,
+                              mathml: '<list><members><csymbol definitionURL="local://symbols/bars/bar2" /></members></list>'
+                            }
+                          },
+                          bars: {
+                            bar0: {
+                              definitionURL: 'local://symbols/bars/bar0',
+                              value: 6,
+                              mathml: '<cn>6</cn>'
+                            },
+                            bar1: {
+                              definitionURL: 'local://symbols/bars/bar1',
+                              value: 5,
+                              mathml: '<cn>5</cn>'
+                            },
+                            bar2: {
+                              definitionURL: 'local://symbols/bars/bar2',
+                              value: 5,
+                              locked: true,
+                              mathml: '<cn>5</cn>'
+                            }
+                          }
+                        },
+                        state: '<state><csymbol definitionURL="local://symbols/lists/list0" /><csymbol definitionURL="local://symbols/lists/list1" /></state>',
+                      }
+
             var question = {
                 bars:[
                     {
@@ -138,7 +190,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 
             }
 
-            this.setQuestion(question)
+            this.setQuestion(newQuestion)
             return this;
         },
 
@@ -156,7 +208,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
         _draggableLayer: undefined,
         _prevDraggable: undefined,
                 
-        addNumberBondsBar: function(length, position, resource, colour, question){
+                addNumberBondsBar: function(length, position, question, locked){
             var self = this;
 
             if (_.isUndefined(this._draggableLayer)) {
@@ -165,12 +217,12 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             }
 
             
-            var dg = new NumberBondBar(length, displaymultiplier, resource);
+            var dg = new NumberBondBar(length, displaymultiplier, locked);
 
             dg.tag = 'dg-' + this._draggableCounter;
             
             dg.setPosition(position);
-				
+                
             dg.setScale(homescale);
           
             dg.onMoved(function (position, draggable) {
@@ -188,7 +240,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 
             dg.onMoveEnded(function (position, draggable) {
 
- 				var dropZones = self.getControls(DROPZONE_PREFIX);
+                var dropZones = self.getControls(DROPZONE_PREFIX);
                 var oldDropZone,
                     newDropZone;
 
@@ -225,8 +277,19 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 }
                 //otherwise, bar was in dock - change dock count + label
                 else{
+                    //need to account for 'infinite' docks
+                    if(question.spawnPoints[draggable._length - 1].limit == false){
+                        //add another bar when one is taken away
+                        var dg = self.addNumberBondsBar(
+                            draggable._length,
+                            cc.p(40 + (unitlength * draggable._length)/4, 50 + (barheight/1.2) * draggable._length),
+                            question,
+                            false
+                        );
+                    } else{
                         docklabelvalues[draggable._length - 1]--;
                         docklabels[draggable._length - 1]._string ='x ' + docklabelvalues[draggable._length - 1];
+                    }
                 }
 
                 var moveToNewDropZone =
@@ -249,13 +312,15 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     draggable.setScale(1);
 
                     //check if all full, i.e. check if complete
-                    for(i = 0; i < question.containers.length; i++){
+                    for(i = 0; i < question.symbols.lists.length; i++){
+
                         if(dropZones[i]._filled != dropZones[i]._length){
                             var check = 1;
                             break;
                         }
                     }
                     if(check != 1){
+                        console.log(question.symbols.lists.length);
                         console.log('complete!');
                     }
 
@@ -278,8 +343,12 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     // send to home - change dock count + label
                     draggable.setPosition(draggable._homePosition);
                     draggable.setScale(homescale);
-                    docklabelvalues[draggable._length - 1]++;
-                    docklabels[draggable._length - 1]._string ='x ' + docklabelvalues[draggable._length - 1];
+                    if(question.spawnPoints[draggable._length - 1].limit == false){
+
+                    } else{
+                        docklabelvalues[draggable._length - 1]++;
+                        docklabels[draggable._length - 1]._string ='x ' + docklabelvalues[draggable._length - 1];
+                    }
 
                 }
             });
@@ -338,7 +407,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             //calculate position
             //calculate vertices of shape
             //call addDropZone
-
         },
         
         
@@ -349,92 +417,92 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
         setQuestion: function (question) {
             var self = this;
 
-            var colours = [
-                { r: 231, g: 0,     b: 0,   a: 255 },
-                { r: 245, g: 94,    b: 0,   a: 255 },
-                { r: 247, g: 204,   b: 0,   a: 255 },
-                { r: 0,   g: 183,   b: 0,   a: 255 },
-                { r: 0,   g: 170,   b: 234, a: 255 },
-                { r: 98,  g: 0,     b: 245, a: 255 },
-                { r: 225, g: 116,   b: 172, a: 255 },
-                { r: 0, g: 0,   b: 0, a: 255 },
-                { r: 75, g: 75,   b: 75, a: 255 },
-                { r: 150, g: 150,   b: 150, a: 255 },
-                //LOCKED bar colours
-                { r: 231, g: 0,     b: 0,   a: 150 },
-                { r: 245, g: 94,    b: 0,   a: 150 },
-                { r: 247, g: 204,   b: 0,   a: 150 },
-                { r: 0,   g: 183,   b: 0,   a: 150 },
-                { r: 0,   g: 170,   b: 234, a: 150 },
-                { r: 98,  g: 0,     b: 245, a: 150 },
-                { r: 225, g: 116,   b: 172, a: 150 },
-                { r: 0, g: 0,   b: 0, a: 150 },
-                { r: 75, g: 75,   b: 75, a: 150 },
-                { r: 150, g: 150,   b: 150, a: 150 }
-            ]
+            // //add dropzone
+            // var margin = (600 - barheight * question.containers.length)/(question.containers.length + 1);
 
-            //add dropzone
-            var margin = (600 - barheight * question.containers.length)/(question.containers.length + 1);
+            // _.each(question.containers, function (container, i){
 
-            _.each(question.containers, function (container, i){
-
-                var dz = self.addDropZone({
-                            x:395, y:margin + (question.containers.length - 1 -i) * (barheight + margin)},
-                            [
-                                {x:0, y:0},
-                                {x:0, y:barheight + 2 * cagepadding},
-                                {x:unitlength * container.unit + 2 * cagepadding, y:barheight + 2 * cagepadding},
-                                {x:unitlength * container.unit + 2 * cagepadding, y:0}
-                            ],
-                        'label');
-                    dz._label.setPosition(cc.p((2 * margin + unitlength * container.unit), barheight/2));
-                    dz._label.setFontSize(30);
-                    dz._filled = 0;
-                    dz._filledArray = new Array();
-                    dz._length = container.unit;
-                    dz._label._string = dz._filled * displaymultiplier;
+            //     var dz = self.addDropZone({
+            //         x:400, y:margin + (question.containers.length - 1 -i) * (barheight + margin)},
+            //         [
+            //             {x:0, y:0},
+            //             {x:0, y:barheight + 2 * cagepadding},
+            //             {x:unitlength * container.unit + 2 * cagepadding, y:barheight + 2 * cagepadding},
+            //             {x:unitlength * container.unit + 2 * cagepadding, y:0}
+            //         ],
+            //         'label');
+            //     dz._label.setPosition(cc.p((2 * margin + unitlength * container.unit), barheight/2));
+            //     dz._label.setFontSize(30);
+            //     dz._filled = 0;
+            //     dz._filledArray = new Array();
+            //     dz._length = container.unit;
+            //     dz._label._string = dz._filled * displaymultiplier;
                     
-            });
+            // });
        
             // add bars in dock
             this._draggableLayer = DraggableLayer.create();
             self.addChild(self._draggableLayer);
 
-            _.each(question.bars, function (bar, i) {             
-                for(var j = 0; j < bar.quantity; j++){
-                    var l = new cc.LayerColor();
-                    l.init(colours[bar.unit - 1], unitlength * bar.unit, barheight);
-                    
-                    var dg = self.addNumberBondsBar(bar.unit, cc.p(40 + (unitlength * bar.unit)/4, 50 + (barheight/1.2) * bar.unit), l, colours[bar.unit - 1], question);
-                    docklabelvalues[bar.unit - 1]++;
+            _.each(question.spawnPoints, function (bar, i) {
+                // if the store has a numerical limit, make appropriate blocks. 
+                if(bar.limit != false){           
+                    for(var j = 0; j < bar.limit; j++){
+                        
+                        var dg = self.addNumberBondsBar(
+                            bar.value,
+                            cc.p(40 + (unitlength * bar.value)/4, 50 + (barheight/1.2) * bar.value),
+                            question,
+                            false
+                        );
+
+                        docklabelvalues[bar.value - 1]++;
+                    }
+                    docklabels[bar.value - 1]._string ='x ' + docklabelvalues[bar.value - 1];
+                } else {
+                    console.log('!!!');
+                    // make two blocks. if one gets dragged out, another is created in its place.
+                    for(var j = 0; j < 2; j++){
+                        var dg = self.addNumberBondsBar(
+                            bar.value,
+                            cc.p(40 + (unitlength * bar.value)/4, 50 + (barheight/1.2) * bar.value),
+                            question,
+                            false
+                        );
+                    }
+
+                    docklabelvalues[bar.value - 1] ='inf';
+                    docklabels[bar.value - 1]._string ='inf';
                 }
-                docklabels[bar.unit - 1]._string ='x ' + docklabelvalues[bar.unit - 1];
-            });         
+            });          
 
-            //add bars in dropzone
-            _.each(question.barsInDropZone, function (bar, i){
-                //find dropzone to put it in
-                var dropZones = self.getControls(DROPZONE_PREFIX);
-                var dropZone = dropZones[bar.dropzone - 1];
-                var dropZonePos = dropZone.getPosition();
+            // //add bars in dropzone
+            // _.each(question.barsInDropZone, function (bar, i){
+            //     //find dropzone to put it in
+            //     var dropZones = self.getControls(DROPZONE_PREFIX);
+            //     var dropZone = dropZones[bar.dropzone - 1];
+            //     var dropZonePos = dropZone.getPosition();
 
-                //make bar
-                var l = new cc.LayerColor();
-                l.init(colours[bar.unit + 9], unitlength * bar.unit, barheight);
-                var dg = self.addNumberBondsBar(bar.unit, cc.p(cagepadding + dropZonePos.x + (dropZone._filled +bar.unit/2)* unitlength, cagepadding + dropZonePos.y + barheight/2), l);             
+            //     //make bar
+            //     var dg = self.addNumberBondsBar(
+            //         bar.unit,
+            //         cc.p(cagepadding + dropZonePos.x + (dropZone._filled +bar.unit/2)* unitlength, cagepadding + dropZonePos.y + barheight/2),
+            //         question,
+            //         true
+            //     );             
                 
-                //add to filledArray etc
-                dropZone._filledArray.push(dg);
-                dropZone._filled += dg._length;
-                //change label for dropzone
-                dropZone._label._string = dropZone._filled * displaymultiplier;
-                dg.setScale(1);
-                //lock these bars
-                dg._isTouchEnabled = false;
-                //overwrite homeposition to dock - no need for this anymore if bars are automatically locked
-                //dg._homePosition = cc.p(40 + (unitlength * bar.unit)/4, (barheight/1.2) * bar.unit);
+            //     //add to filledArray etc
+            //     dropZone._filledArray.push(dg);
+            //     dropZone._filled += dg._length;
+            //     //change label for dropzone
+            //     dropZone._label._string = dropZone._filled * displaymultiplier;
+            //     dg.setScale(1);
+            //     //lock these bars
+            //     dg._isTouchEnabled = false;
+            //     //overwrite homeposition to dock - no need for this anymore if bars are automatically locked
+            //     //dg._homePosition = cc.p(40 + (unitlength * bar.unit)/4, (barheight/1.2) * bar.unit);
 
-            });
+            // });
         }
 
     });
