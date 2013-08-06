@@ -78,6 +78,12 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                               locked: true,
                               mathml: '<list><members></members></list>'
                             },
+                            list2: {
+                              definitionURL: 'local://symbols/lists/list0',
+                              capacity: 11,
+                              locked: true,
+                              mathml: '<list><members></members></list>'
+                            },
                             list3: {
                               definitionURL: 'local://symbols/lists/list0',
                               capacity: 11,
@@ -85,12 +91,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                               mathml: '<list><members></members></list>'
                             },
                             list4: {
-                              definitionURL: 'local://symbols/lists/list0',
-                              capacity: 11,
-                              locked: true,
-                              mathml: '<list><members></members></list>'
-                            },
-                            list2: {
                               definitionURL: 'local://symbols/lists/list1',
                               capacity: 10,
                               locked: false,
@@ -101,6 +101,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                             bar0: {
                               definitionURL: 'local://symbols/bars/bar0',
                               value: 6,
+                              locked: false,
                               mathml: '<cn>6</cn>'
                             },
                             bar1: {
@@ -241,7 +242,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     draggable.setScale(1);
 
                     //check if all full, i.e. check if complete
-                    for(i = 0; i < question.symbols.lists.length; i++){
+                    for(i = 0; i < Object.keys(question.symbols.lists).length; i++){
 
                         if(dropZones[i]._filled != dropZones[i]._length){
                             var check = 1;
@@ -249,7 +250,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                         }
                     }
                     if(check != 1){
-                        console.log(question.symbols.lists.length);
                         console.log('complete!');
                     }
 
@@ -348,13 +348,11 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 
             //add dropzone
             var margin = (600 - barheight * Object.keys(question.symbols.lists).length)/(Object.keys(question.symbols.lists).length + 1);
-            console.log(margin);
+    
 
             _.each(question.symbols.lists, function (container, i){
                 //extract index from 'list0/1/2...'
                 i = parseInt(i.slice(4));
-                console.log(i);
-                console.log(600 + margin + (Object.keys(question.symbols.lists).length - 1 - i) * (barheight + margin));
                 var dz = self.addDropZone({
                     x:400, y:margin + (Object.keys(question.symbols.lists).length - 1 - i) * (barheight + margin)},
                     [
@@ -370,12 +368,47 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 dz._filledArray = new Array();
                 dz._length = container.capacity;
                 dz._label._string = dz._filled * displaymultiplier;
+
+                //get list of preinitialised bars in this dropzone
+                var members = $($.parseXML(container.mathml)).find('csymbol').toArray().map(function(csymbol) {
+                    var id = $(csymbol).attr('definitionURL').match(/[^/]+$/)[0];
+                    if(container.locked == true){
+                        question.symbols.bars[id].locked = true;
+                    }
+                    return question.symbols.bars[id];
+                });
+
+                //add bars to dropzone
+                _.each(members, function (bar, i){
+                    var dropZonePos = dz.getPosition();
+
+                    //make bar
+                    var dg = self.addNumberBondsBar(
+                        bar.value,
+                        cc.p(cagepadding + dropZonePos.x + (dz._filled +bar.value/2)* unitlength, cagepadding + dropZonePos.y + barheight/2),
+                        question,
+                        bar.locked
+                    );             
                     
+                    //add to filledArray etc
+                    dz._filledArray.push(dg);
+                    dz._filled += dg._length;
+                    //change label for dropzone
+                    dz._label._string = dz._filled * displaymultiplier;
+                    dg.setScale(1);
+                    
+                    //overwrite homeposition to dock - no need for this anymore if bars are automatically locked
+                    dg._homePosition = cc.p(40 + (unitlength * bar.value)/4, 50 + (barheight/1.2) * bar.value);
+
+                });
+
+                    //if bar is locked || dropzone is locked, disable touch. (set filled to ...full?)
             });
        
+
             // add bars in dock
             this._draggableLayer = DraggableLayer.create();
-            self.addChild(self._draggableLayer);
+            self.addChild(self._draggableLayer, DRAGGABLE_Z + 1);
 
             _.each(question.spawnPoints, function (bar, i) {
                 // if the store has a numerical limit, make appropriate blocks. 
@@ -393,7 +426,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     }
                     docklabels[bar.value - 1]._string ='x ' + docklabelvalues[bar.value - 1];
                 } else {
-                    console.log('!!!');
                     // make two blocks. if one gets dragged out, another is created in its place.
                     for(var j = 0; j < 2; j++){
                         var dg = self.addNumberBondsBar(
@@ -403,7 +435,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                             false
                         );
                     }
-
                     docklabelvalues[bar.value - 1] ='inf';
                     docklabels[bar.value - 1]._string ='inf';
                 }

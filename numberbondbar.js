@@ -9,18 +9,55 @@ define(['cocos2d', 'draggable'], function (cc, Draggable) {
 
         _length: undefined,
 
-        ctor:function(length, multiplier, resource, fixed) {
+        ctor:function(length, multiplier, locked) {
             this._super();
             
             this._length = length;
-            
-            if (typeof resource === 'object') {
-                this.initWithSprite(resource);
+
+            var barheight = 55;
+
+            var unitlength = 50;
+
+            if (locked == true){
+                var colours = [
+                    { r: 231, g: 0,     b: 0,   a: 100 },
+                    { r: 245, g: 94,    b: 0,   a: 100 },
+                    { r: 247, g: 204,   b: 0,   a: 100 },
+                    { r: 0,   g: 183,   b: 0,   a: 100 },
+                    { r: 0,   g: 170,   b: 234, a: 100 },
+                    { r: 98,  g: 0,     b: 245, a: 100 },
+                    { r: 225, g: 116,   b: 172, a: 100 },
+                    { r: 0, g: 0,   b: 0, a: 100 },
+                    { r: 75, g: 75,   b: 75, a: 100 },
+                    { r: 150, g: 150,   b: 150, a: 100 }
+                ]
             } else {
-                this.initWithFile(resource);
+            var colours = [
+                { r: 231, g: 0,     b: 0,   a: 255 },
+                { r: 245, g: 94,    b: 0,   a: 255 },
+                { r: 247, g: 204,   b: 0,   a: 255 },
+                { r: 0,   g: 183,   b: 0,   a: 255 },
+                { r: 0,   g: 170,   b: 234, a: 255 },
+                { r: 98,  g: 0,     b: 245, a: 255 },
+                { r: 225, g: 116,   b: 172, a: 255 },
+                { r: 0, g: 0,   b: 0, a: 255 },
+                { r: 75, g: 75,   b: 75, a: 255 },
+                { r: 150, g: 150,   b: 150, a: 255 },
+            ]
             }
+
+            var resource = new cc.LayerColor();
+            resource.init(colours[length - 1], unitlength * length, barheight);
+
+            this.initWithSprite(resource);
+            
+
             this.setZoomOnTouchDown(false);
             this.setLabel(length * multiplier);
+
+            if (locked == true){
+                this._isTouchEnabled = false;
+            }
             
         },
 
