@@ -75,25 +75,25 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                             list1: {
                               definitionURL: 'local://symbols/lists/list0',
                               capacity: 11,
-                              locked: true,
+                              locked: false,
                               mathml: '<list><members></members></list>'
                             },
                             list2: {
                               definitionURL: 'local://symbols/lists/list0',
                               capacity: 11,
-                              locked: true,
+                              locked: false,
                               mathml: '<list><members></members></list>'
                             },
                             list3: {
                               definitionURL: 'local://symbols/lists/list0',
                               capacity: 11,
-                              locked: true,
+                              locked: false,
                               mathml: '<list><members></members></list>'
                             },
                             list4: {
                               definitionURL: 'local://symbols/lists/list1',
                               capacity: 10,
-                              locked: false,
+                              locked: true,
                               mathml: '<list><members><csymbol definitionURL="local://symbols/bars/bar2" /></members></list>'
                             }
                           },
@@ -288,21 +288,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             return dg;
         },
 
-        initCagedBars: function (){
-                 
-        },
-
-        initDropZoneBars: function (){
-            //read in matrix with lengths + dropzones
-
-            //work out position
-            //make background resource
-            //call addNumberBondsBar with different position
-            //overwrite homePosition? (have a feeling this is necessary? need to know which cage it belongs to?)
-            //edit filledArray for dropzone
-
-        },
-        
         _dropzoneCounter: 0,
         
         _addDropZone: function (dz, position, shape, label, bgResource) {
@@ -329,15 +314,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             args.unshift(dz);
             return this._addDropZone.apply(this, args);
         },
-
-        initDropZones: function (){
-            //read in array with lengths
-            //make array of dropzones
-            //calculate position
-            //calculate vertices of shape
-            //call addDropZone
-        },
-        
         
         getState: function () {
             throw {name : "NotImplementedError", message : "This needs implementing"};
@@ -349,10 +325,10 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             //add dropzone
             var margin = (600 - barheight * Object.keys(question.symbols.lists).length)/(Object.keys(question.symbols.lists).length + 1);
     
-
             _.each(question.symbols.lists, function (container, i){
                 //extract index from 'list0/1/2...'
                 i = parseInt(i.slice(4));
+
                 var dz = self.addDropZone({
                     x:400, y:margin + (Object.keys(question.symbols.lists).length - 1 - i) * (barheight + margin)},
                     [
@@ -399,10 +375,11 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     
                     //overwrite homeposition to dock - no need for this anymore if bars are automatically locked
                     dg._homePosition = cc.p(40 + (unitlength * bar.value)/4, 50 + (barheight/1.2) * bar.value);
-
                 });
 
-                    //if bar is locked || dropzone is locked, disable touch. (set filled to ...full?)
+                if(container.locked == true){
+                    dz._filled = container.capacity;
+                }
             });
        
 
@@ -440,33 +417,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 }
             });         
 
-            // //add bars in dropzone
-            // _.each(question.barsInDropZone, function (bar, i){
-            //     //find dropzone to put it in
-            //     var dropZones = self.getControls(DROPZONE_PREFIX);
-            //     var dropZone = dropZones[bar.dropzone - 1];
-            //     var dropZonePos = dropZone.getPosition();
-
-            //     //make bar
-            //     var dg = self.addNumberBondsBar(
-            //         bar.unit,
-            //         cc.p(cagepadding + dropZonePos.x + (dropZone._filled +bar.unit/2)* unitlength, cagepadding + dropZonePos.y + barheight/2),
-            //         question,
-            //         true
-            //     );             
-                
-            //     //add to filledArray etc
-            //     dropZone._filledArray.push(dg);
-            //     dropZone._filled += dg._length;
-            //     //change label for dropzone
-            //     dropZone._label._string = dropZone._filled * displaymultiplier;
-            //     dg.setScale(1);
-            //     //lock these bars
-            //     dg._isTouchEnabled = false;
-            //     //overwrite homeposition to dock - no need for this anymore if bars are automatically locked
-            //     //dg._homePosition = cc.p(40 + (unitlength * bar.unit)/4, (barheight/1.2) * bar.unit);
-
-            // });
         }
 
     });
