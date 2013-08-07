@@ -51,74 +51,74 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             }
 
             var newQuestion = {
-                        tool: 'number_bonds',
-                        spawnPoints: [
-                          { value: 1, limit: false, mathml: '<cn>1</cn>' },
-                          { value: 2, limit: false, mathml: '<cn>2</cn>' },
-                          { value: 3, limit: false, mathml: '<cn>3</cn>' },
-                          { value: 4, limit: false, mathml: '<cn>4</cn>' },
-                          { value: 5, limit: false, mathml: '<cn>5</cn>' },
-                          { value: 6, limit: false, mathml: '<cn>6</cn>' },
-                          { value: 7, limit: false, mathml: '<cn>7</cn>' },
-                          { value: 8, limit: false, mathml: '<cn>8</cn>' },
-                          { value: 9, limit: false, mathml: '<cn>9</cn>' },
-                          { value: 10, limit: false, mathml: '<cn>10</cn>' }
-                        ],
-                        symbols: {
-                          lists: {
-                            list0: {
-                              definitionURL: 'local://symbols/lists/list0',
-                              capacity: 11,
-                              locked: true,
-                              mathml: '<list><members><csymbol definitionURL="local://symbols/bars/bar0" /><csymbol definitionURL="local://symbols/bars/bar1" /></members></list>'
-                            },
-                            list1: {
-                              definitionURL: 'local://symbols/lists/list0',
-                              capacity: 11,
-                              locked: false,
-                              mathml: '<list><members></members></list>'
-                            },
-                            list2: {
-                              definitionURL: 'local://symbols/lists/list0',
-                              capacity: 11,
-                              locked: false,
-                              mathml: '<list><members></members></list>'
-                            },
-                            list3: {
-                              definitionURL: 'local://symbols/lists/list0',
-                              capacity: 11,
-                              locked: false,
-                              mathml: '<list><members></members></list>'
-                            },
-                            list4: {
-                              definitionURL: 'local://symbols/lists/list1',
-                              capacity: 10,
-                              locked: true,
-                              mathml: '<list><members><csymbol definitionURL="local://symbols/bars/bar2" /></members></list>'
-                            }
-                          },
-                          bars: {
-                            bar0: {
-                              definitionURL: 'local://symbols/bars/bar0',
-                              value: 6,
-                              locked: false,
-                              mathml: '<cn>6</cn>'
-                            },
-                            bar1: {
-                              definitionURL: 'local://symbols/bars/bar1',
-                              value: 5,
-                              mathml: '<cn>5</cn>'
-                            },
-                            bar2: {
-                              definitionURL: 'local://symbols/bars/bar2',
-                              value: 5,
-                              locked: true,
-                              mathml: '<cn>5</cn>'
-                            }
-                          }
-                        },
-                        state: '<state><csymbol definitionURL="local://symbols/lists/list0" /><csymbol definitionURL="local://symbols/lists/list1" /></state>',
-                      }
+                tool: 'number_bonds',
+                spawnPoints: [
+                  { value: 1, limit: false, mathml: '<cn>1</cn>' },
+                  { value: 2, limit: false, mathml: '<cn>2</cn>' },
+                  { value: 3, limit: false, mathml: '<cn>3</cn>' },
+                  { value: 4, limit: false, mathml: '<cn>4</cn>' },
+                  { value: 5, limit: false, mathml: '<cn>5</cn>' },
+                  { value: 6, limit: false, mathml: '<cn>6</cn>' },
+                  { value: 7, limit: false, mathml: '<cn>7</cn>' },
+                  { value: 8, limit: false, mathml: '<cn>8</cn>' },
+                  { value: 9, limit: false, mathml: '<cn>9</cn>' },
+                  { value: 10, limit: false, mathml: '<cn>10</cn>' }
+                ],
+                symbols: {
+                  lists: {
+                    list0: {
+                      definitionURL: 'local://symbols/lists/list0',
+                      capacity: 11,
+                      locked: true,
+                      mathml: '<list><members><csymbol definitionURL="local://symbols/bars/bar0" /><csymbol definitionURL="local://symbols/bars/bar1" /></members></list>'
+                    },
+                    list1: {
+                      definitionURL: 'local://symbols/lists/list0',
+                      capacity: 11,
+                      locked: false,
+                      mathml: '<list><members></members></list>'
+                    },
+                    list2: {
+                      definitionURL: 'local://symbols/lists/list0',
+                      capacity: 11,
+                      locked: false,
+                      mathml: '<list><members></members></list>'
+                    },
+                    list3: {
+                      definitionURL: 'local://symbols/lists/list0',
+                      capacity: 11,
+                      locked: false,
+                      mathml: '<list><members></members></list>'
+                    },
+                    list4: {
+                      definitionURL: 'local://symbols/lists/list1',
+                      capacity: 10,
+                      locked: true,
+                      mathml: '<list><members><csymbol definitionURL="local://symbols/bars/bar2" /></members></list>'
+                    }
+                  },
+                  bars: {
+                    bar0: {
+                      definitionURL: 'local://symbols/bars/bar0',
+                      value: 6,
+                      locked: false,
+                      mathml: '<cn>6</cn>'
+                    },
+                    bar1: {
+                      definitionURL: 'local://symbols/bars/bar1',
+                      value: 5,
+                      mathml: '<cn>5</cn>'
+                    },
+                    bar2: {
+                      definitionURL: 'local://symbols/bars/bar2',
+                      value: 5,
+                      locked: true,
+                      mathml: '<cn>5</cn>'
+                    }
+                  }
+                },
+                state: '<state><csymbol definitionURL="local://symbols/lists/list0" /><csymbol definitionURL="local://symbols/lists/list1" /></state>',
+            }
 
             this.setQuestion(newQuestion)
             return this;
@@ -145,14 +145,11 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 this._draggableLayer = DraggableLayer.create();
                 this.addChild(this._draggableLayer, DRAGGABLE_Z);
             }
-
             
             var dg = new NumberBondBar(length, displaymultiplier, locked);
 
-            dg.tag = 'dg-' + this._draggableCounter;
-            
-            dg.setPosition(position);
-                
+            dg.tag = 'dg-' + this._draggableCounter;            
+            dg.setPosition(position);                
             dg.setScale(homescale);
           
             dg.onMoved(function (position, draggable) {
@@ -190,27 +187,36 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     }
                 }
 
-                if(bl.isPointInsideArea(
-                    position,
+                if(
+                    bl.isPointInsideArea(position,
                     [
-                        {x:draggable._lastPosition.x - draggable._length * unitlength/2, y:draggable._lastPosition.y + barheight/2},
-                        {x:draggable._lastPosition.x + draggable._length * unitlength/2, y:draggable._lastPosition.y + barheight/2},
-                        {x:draggable._lastPosition.x + draggable._length * unitlength/2, y:draggable._lastPosition.y - barheight/2},
-                        {x:draggable._lastPosition.x - draggable._length * unitlength/2, y:draggable._lastPosition.y - barheight/2}
-                    ],
-                    cc.p(0, 0)) == true 
-                    ||
+                        {
+                            x:draggable._lastPosition.x - draggable._length * unitlength/2,
+                            y:draggable._lastPosition.y + barheight/2
+                        },
+                        {
+                            x:draggable._lastPosition.x + draggable._length * unitlength/2,
+                            y:draggable._lastPosition.y + barheight/2
+                        },
+                        {
+                            x:draggable._lastPosition.x + draggable._length * unitlength/2,
+                            y:draggable._lastPosition.y - barheight/2
+                        },
+                        {
+                            x:draggable._lastPosition.x - draggable._length * unitlength/2,
+                            y:draggable._lastPosition.y - barheight/2
+                        }
+                    ], cc.p(0, 0)) == true ||
                     (newDropZone 
                         && newDropZone != oldDropZone 
                         && draggable._length > newDropZone._length - newDropZone._filled)
-                    ){
-                        if(!oldDropZone){
-                           draggable.setScale(homescale); 
-                        }
-                        draggable.animateToPosition(draggable._lastPosition);
-                        return dg;
+                ){
+                    if(!oldDropZone){
+                       draggable.setScale(homescale); 
+                    }
+                    draggable.animateToPosition(draggable._lastPosition);
+                    return dg;
                 }
-
 
                 if (oldDropZone) {
                     // remove from oldDropZone if either sending home or migrating to another drop-zone
@@ -220,15 +226,15 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     oldDropZone._filledArray.splice(ix, 1);
                     oldDropZone._filled -= draggable._length;
                     oldDropZone._label._string = oldDropZone._filled * displaymultiplier;
-
+                    //shift everything on the right of moved block to the left
                     for (var i = ix; i < oldDropZone._filledArray.length; i++) {
                         var bar = oldDropZone._filledArray[i];
                         var oldPos = bar.getPosition();
                         bar.animateToPosition(cc.p(oldPos.x - draggable._length * unitlength, oldPos.y));
                     }
                 }
-                //otherwise, bar was in dock - change dock count + label
-                else{
+                
+                else{//otherwise, bar was in dock - change dock count + label
                     //need to account for 'infinite' docks
                     if(question.spawnPoints[draggable._length - 1].limit == false){
                         //add another bar when one is taken away
@@ -246,18 +252,17 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 
                 var moveToNewDropZone =
                     newDropZone 
-                    //&& newDropZone != oldDropZone
                     && draggable._length <= newDropZone._length - newDropZone._filled;
 
                 if (moveToNewDropZone) {
                     var dropZonePos = newDropZone.getPosition();
                     var draggableIndex;
                     var newPos = 0;
+
                     //find out draggable's index in dropzone
                     for (i = 0; i < newDropZone._filledArray.length; i++){
                        if (newDropZone._filledArray[i].getPosition().x < position.x){                            
                             newPos += newDropZone._filledArray[i]._length;
-                            
                         } else {
                             draggableIndex = i;
                             break;
@@ -283,11 +288,9 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                         cagepadding + dropZonePos.x + newPos * unitlength,
                         cagepadding + dropZonePos.y), true);
 
-                    //update info on what's in dropzone & change label
-                    //newDropZone._filledArray.push(draggable);
+                    //update info on what's in dropzone
                     newDropZone._filled += draggable._length;
                     newDropZone._label._string = newDropZone._filled * displaymultiplier;
-
                     draggable.setScale(1);
 
                     //check if all full, i.e. check if complete
@@ -310,7 +313,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                         cagepadding + oldDropZonePos.x + oldDropZone._filled * unitlength,
                         cagepadding + oldDropZonePos.y), true);
 
-                    //update info on what's in dropzone & change label
+                    //update info on what's in dropzone
                     oldDropZone._filledArray.push(draggable);
                     oldDropZone._filled += draggable._length;
                     oldDropZone._label._string = oldDropZone._filled * displaymultiplier;
@@ -319,7 +322,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     
                 } else {
                     // send to home - change dock count + label
-                    //draggable.setPosition(draggable._homePosition);
                     draggable.returnToHomePosition(true);
                     draggable.setScale(homescale);
                     if(question.spawnPoints[draggable._length - 1].limit == false){
@@ -382,10 +384,22 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 var dz = self.addDropZone({
                     x:400, y:margin + (Object.keys(question.symbols.lists).length - 1 - i) * (barheight + margin)},
                     [
-                        {x:0, y:0},
-                        {x:0, y:barheight + 2 * cagepadding},
-                        {x:unitlength * container.capacity + 2 * cagepadding, y:barheight + 2 * cagepadding},
-                        {x:unitlength * container.capacity + 2 * cagepadding, y:0}
+                        {
+                            x:0,
+                            y:0
+                        },
+                        {
+                            x:0,
+                            y:barheight + 2 * cagepadding
+                        },
+                        {
+                            x:unitlength * container.capacity + 2 * cagepadding,
+                            y:barheight + 2 * cagepadding
+                        },
+                        {
+                            x:unitlength * container.capacity + 2 * cagepadding,
+                            y:0
+                        }
                     ],
                     'label');
                 dz._label.setPosition(cc.p((margin + unitlength * container.capacity), barheight/2));
@@ -431,7 +445,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     dz._filled = container.capacity;
                 }
             });
-       
 
             // add bars in dock
             this._draggableLayer = DraggableLayer.create();
