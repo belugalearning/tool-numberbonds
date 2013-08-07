@@ -12,7 +12,7 @@ define(['cocos2d', 'draggable'], function (cc, Draggable) {
         ctor:function(length, multiplier, locked) {
             this._super();
             
-            this._length = length;
+            
 
             var barheight = 55;
 
@@ -54,6 +54,7 @@ define(['cocos2d', 'draggable'], function (cc, Draggable) {
 
             this.setZoomOnTouchDown(false);
             this.setLabel(length * multiplier);
+            this._length = length;
 
             if (locked == true){
                 this._isTouchEnabled = false;
@@ -69,7 +70,11 @@ define(['cocos2d', 'draggable'], function (cc, Draggable) {
                 this.addChild(this._label);  
             }
             this._label.setPosition(cc.p(this.getContentSize().width / 2, this.getContentSize().height / 2));
-        }
+        },
+
+        getLength: function () {
+            return this.length;
+        },
 
     });
 

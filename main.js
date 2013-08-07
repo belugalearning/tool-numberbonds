@@ -152,7 +152,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             dg.tag = 'dg-' + this._draggableCounter;
             
             dg.setPosition(position);
-				
+                
             dg.setScale(homescale);
           
             dg.onMoved(function (position, draggable) {
@@ -170,7 +170,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 
             dg.onMoveEnded(function (position, draggable) {
 
- 				var dropZones = self.getControls(DROPZONE_PREFIX);
+                var dropZones = self.getControls(DROPZONE_PREFIX);
                 var oldDropZone,
                     newDropZone;
 
@@ -190,11 +190,26 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     }
                 }
 
+                if(bl.isPointInsideArea(
+                    position,
+                    [
+                        {x:draggable._lastPosition.x - draggable._length * unitlength/2, y:draggable._lastPosition.y + barheight/2},
+                        {x:draggable._lastPosition.x + draggable._length * unitlength/2, y:draggable._lastPosition.y + barheight/2},
+                        {x:draggable._lastPosition.x + draggable._length * unitlength/2, y:draggable._lastPosition.y - barheight/2},
+                        {x:draggable._lastPosition.x - draggable._length * unitlength/2, y:draggable._lastPosition.y - barheight/2}
+                    ],
+                    cc.p(0, 0)) == true || (newDropZone && draggable._length > newDropZone._length - newDropZone._filled)){
+                    console.log('!!!!!!');
+                    draggable.setPosition(draggable._lastPosition);
+                    return dg;
+                }
+
+
                 if (oldDropZone) {
                     // remove from oldDropZone if either sending home or migrating to another drop-zone
                     var ix = oldDropZone._filledArray.indexOf(draggable);
 
-                    //update info on what's in dropzone & change label
+                    //update info on what's in dropzone & change label (i.e. remove this bar from the dropzone's filledArray)
                     oldDropZone._filledArray.splice(ix, 1);
                     oldDropZone._filled -= draggable._length;
                     oldDropZone._label._string = oldDropZone._filled * displaymultiplier;
@@ -229,13 +244,42 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 
                 if (moveToNewDropZone) {
                     var dropZonePos = newDropZone.getPosition();
-                    
+                    var draggableIndex;
+                    var newPos = 0;
+                    //find out draggable's index in dropzone
+                    for (i = 0; i < newDropZone._filledArray.length; i++){
+                        console.log('bar in dock ' + newDropZone._filledArray[i].getPosition().x +' dropped bar' +position.x);
+                        console.log(i, (newDropZone._filledArray[i].getPosition().x < position.x));
+                        if (newDropZone._filledArray[i].getPosition().x < position.x){                            
+                            newPos += newDropZone._filledArray[i]._length;
+                            
+                        } else {
+                            draggableIndex = i;
+                            break;
+                        }
+                        draggableIndex = newDropZone._filledArray.length;
+                    }
+
+                    //shift everything to the right of draggable by its length
+                    for (i = draggableIndex; i < newDropZone._filledArray.length; i++){
+                        var currentPos = newDropZone._filledArray[i].getPosition();
+
+                        newDropZone._filledArray[i].setPosition(cc.p(
+                            currentPos.x + draggable._length * unitlength,
+                            currentPos.y)
+                        );
+                    }
+
+                    //add to filled array
+                    newDropZone._filledArray.splice(draggableIndex, 0, draggable);
+
+                    //add draggable
                     draggable.setPosition(cc.p(
-                        cagepadding + dropZonePos.x + newDropZone._filled * unitlength,
+                        cagepadding + dropZonePos.x + newPos * unitlength,
                         cagepadding + dropZonePos.y), true);
 
                     //update info on what's in dropzone & change label
-                    newDropZone._filledArray.push(draggable);
+                    //newDropZone._filledArray.push(draggable);
                     newDropZone._filled += draggable._length;
                     newDropZone._label._string = newDropZone._filled * displaymultiplier;
 
@@ -253,7 +297,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                         console.log('complete!');
                     }
 
-                } else if (oldDropZone && newDropZone) {
+                } else if (oldDropZone && newDropZone) { // has old dropzone, dragged to filled/locked dropzone
+                    console.log('!!!');
                     //put it back in its old drop zone
                     var oldDropZonePos = oldDropZone.getPosition();
                     
