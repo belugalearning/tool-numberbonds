@@ -319,7 +319,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     
                 } else {
                     // send to home - change dock count + label
-                    draggable.setPosition(draggable._homePosition);
+                    //draggable.setPosition(draggable._homePosition);
+                    draggable.returnToHomePosition(true);
                     draggable.setScale(homescale);
                     if(question.spawnPoints[draggable._length - 1].limit == false){
 
@@ -387,7 +388,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                         {x:unitlength * container.capacity + 2 * cagepadding, y:0}
                     ],
                     'label');
-                dz._label.setPosition(cc.p((2 * margin + unitlength * container.capacity - 30), barheight/2));
+                dz._label.setPosition(cc.p((margin + unitlength * container.capacity), barheight/2));
                 dz._label.setFontSize(30);
                 dz._filled = 0;
                 dz._filledArray = new Array();
