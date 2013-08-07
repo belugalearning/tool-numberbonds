@@ -204,6 +204,9 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                         && newDropZone != oldDropZone 
                         && draggable._length > newDropZone._length - newDropZone._filled)
                     ){
+                        if(!oldDropZone){
+                           draggable.setScale(homescale); 
+                        }
                         draggable.setPosition(draggable._lastPosition);
                         return dg;
                 }
