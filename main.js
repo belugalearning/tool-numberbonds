@@ -198,10 +198,14 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                         {x:draggable._lastPosition.x + draggable._length * unitlength/2, y:draggable._lastPosition.y - barheight/2},
                         {x:draggable._lastPosition.x - draggable._length * unitlength/2, y:draggable._lastPosition.y - barheight/2}
                     ],
-                    cc.p(0, 0)) == true || (newDropZone && draggable._length > newDropZone._length - newDropZone._filled)){
-                    console.log('!!!!!!');
-                    draggable.setPosition(draggable._lastPosition);
-                    return dg;
+                    cc.p(0, 0)) == true 
+                    ||
+                    (newDropZone 
+                        && newDropZone != oldDropZone 
+                        && draggable._length > newDropZone._length - newDropZone._filled)
+                    ){
+                        draggable.setPosition(draggable._lastPosition);
+                        return dg;
                 }
 
 
@@ -248,9 +252,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     var newPos = 0;
                     //find out draggable's index in dropzone
                     for (i = 0; i < newDropZone._filledArray.length; i++){
-                        console.log('bar in dock ' + newDropZone._filledArray[i].getPosition().x +' dropped bar' +position.x);
-                        console.log(i, (newDropZone._filledArray[i].getPosition().x < position.x));
-                        if (newDropZone._filledArray[i].getPosition().x < position.x){                            
+                       if (newDropZone._filledArray[i].getPosition().x < position.x){                            
                             newPos += newDropZone._filledArray[i]._length;
                             
                         } else {
@@ -298,7 +300,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     }
 
                 } else if (oldDropZone && newDropZone) { // has old dropzone, dragged to filled/locked dropzone
-                    console.log('!!!');
                     //put it back in its old drop zone
                     var oldDropZonePos = oldDropZone.getPosition();
                     
