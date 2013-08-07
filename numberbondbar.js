@@ -76,6 +76,30 @@ define(['cocos2d', 'draggable'], function (cc, Draggable) {
             return this.length;
         },
 
+        returnToHomePosition: function (animate) {
+            if (animate == true) {
+                var action = cc.Sequence.create(cc.MoveTo.create(0.2, this._homePosition));
+                this.runAction(action);
+                return;
+            }
+            this.setPosition(this._homePosition);
+        },
+
+        animateToPosition: function (pos, anchorBottomLeft) {
+            if (anchorBottomLeft) {
+                var size = this.getContentSize();
+                pos.x += size.width * 0.5;
+                pos.y += size.height * 0.5;
+            }
+            if (this._posCount === 0) {
+                this._homePosition = pos;
+            }
+            this._posCount++;
+            var action = cc.Sequence.create(cc.MoveTo.create(0.2, pos));
+            this.runAction(action);
+            return;
+        }
+
     });
 
     return NumberBondBar;

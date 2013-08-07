@@ -54,8 +54,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                         tool: 'number_bonds',
                         spawnPoints: [
                           { value: 1, limit: false, mathml: '<cn>1</cn>' },
-                          { value: 2, limit: 2, mathml: '<cn>2</cn>' },
-                          { value: 3, limit: 3, mathml: '<cn>3</cn>' },
+                          { value: 2, limit: false, mathml: '<cn>2</cn>' },
+                          { value: 3, limit: false, mathml: '<cn>3</cn>' },
                           { value: 4, limit: false, mathml: '<cn>4</cn>' },
                           { value: 5, limit: false, mathml: '<cn>5</cn>' },
                           { value: 6, limit: false, mathml: '<cn>6</cn>' },
@@ -207,7 +207,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                         if(!oldDropZone){
                            draggable.setScale(homescale); 
                         }
-                        draggable.setPosition(draggable._lastPosition);
+                        draggable.animateToPosition(draggable._lastPosition);
                         return dg;
                 }
 
@@ -224,7 +224,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     for (var i = ix; i < oldDropZone._filledArray.length; i++) {
                         var bar = oldDropZone._filledArray[i];
                         var oldPos = bar.getPosition();
-                        bar.setPosition(cc.p(oldPos.x - draggable._length * unitlength, oldPos.y));
+                        bar.animateToPosition(cc.p(oldPos.x - draggable._length * unitlength, oldPos.y));
                     }
                 }
                 //otherwise, bar was in dock - change dock count + label
@@ -269,7 +269,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     for (i = draggableIndex; i < newDropZone._filledArray.length; i++){
                         var currentPos = newDropZone._filledArray[i].getPosition();
 
-                        newDropZone._filledArray[i].setPosition(cc.p(
+                        newDropZone._filledArray[i].animateToPosition(cc.p(
                             currentPos.x + draggable._length * unitlength,
                             currentPos.y)
                         );
@@ -279,7 +279,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     newDropZone._filledArray.splice(draggableIndex, 0, draggable);
 
                     //add draggable
-                    draggable.setPosition(cc.p(
+                    draggable.animateToPosition(cc.p(
                         cagepadding + dropZonePos.x + newPos * unitlength,
                         cagepadding + dropZonePos.y), true);
 
