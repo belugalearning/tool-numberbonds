@@ -43,6 +43,8 @@ define(['cocos2d', 'draggable'], function (cc, Draggable) {
                     { r: 73,    g: 71,  b: 71,  a: 175 },
                     { r: 166,   g: 54,  b: 198, a: 175 },
                     { r: 5,     g: 52,  b: 179, a: 175 },
+                    { r: 245,   g: 94,  b: 0,   a: 175 },
+                    { r: 5,     g: 52,  b: 179, a: 175 },
                     { r: 245,   g: 94,  b: 0,   a: 175 }
                 ]
             } else {

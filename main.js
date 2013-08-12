@@ -18,7 +18,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
     var unitlength = 50;
     var homescale = 0.5;
 
-    var displaymultiplier = 0.1;
+    var displaymultiplier = 2;
 
     var docklabelvalues = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     var docklabels = new Array ();
@@ -68,9 +68,9 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                   lists: {
                     list0: {
                       definitionURL: 'local://symbols/lists/list0',
-                      capacity: 11,
+                      capacity: 12,
                       locked: true,
-                      mathml: '<list><members><csymbol definitionURL="local://symbols/bars/bar0" /><csymbol definitionURL="local://symbols/bars/bar1" /></members></list>'
+                      mathml: '<list><members><csymbol definitionURL="local://symbols/bars/bar0" /></members></list>'
                     },
                     list1: {
                       definitionURL: 'local://symbols/lists/list0',
@@ -92,7 +92,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     },
                     list4: {
                       definitionURL: 'local://symbols/lists/list1',
-                      capacity: 10,
+                      capacity: 11,
                       locked: true,
                       mathml: '<list><members><csymbol definitionURL="local://symbols/bars/bar2" /></members></list>'
                     }
@@ -100,7 +100,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                   bars: {
                     bar0: {
                       definitionURL: 'local://symbols/bars/bar0',
-                      value: 6,
+                      value: 12,
                       locked: false,
                       mathml: '<cn>6</cn>'
                     },
@@ -117,7 +117,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     }
                   }
                 },
-                labelShown: false,
+                labelShown: true,
                 state: '<state><csymbol definitionURL="local://symbols/lists/list0" /><csymbol definitionURL="local://symbols/lists/list1" /></state>',
             }
 
@@ -243,7 +243,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                             draggable._length,
                             cc.p(40 + (unitlength * draggable._length)/4, 50 + (barheight/1.2) * draggable._length),
                             question,
-                            false
+                            false,
+                            question.labelShown
                         );
                     } else{
                         docklabelvalues[draggable._length - 1]--;
