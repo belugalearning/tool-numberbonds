@@ -9,7 +9,7 @@ define(['cocos2d', 'draggable'], function (cc, Draggable) {
 
         _length: undefined,
 
-        ctor:function(length, multiplier, locked) {
+        ctor:function(length, multiplier, locked, labelShown) {
             this._super();
 
             var displayAccuracy = 0;
@@ -78,8 +78,12 @@ define(['cocos2d', 'draggable'], function (cc, Draggable) {
             
 
             this.setZoomOnTouchDown(false);
-            var label = (length * multiplier).toFixed(displayAccuracy);
-            this.setLabel(label);
+            
+            if(labelShown == true){
+                var label = (length * multiplier).toFixed(displayAccuracy);
+                this.setLabel(label);
+            }
+
             this._length = length;
 
             if (locked == true){

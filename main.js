@@ -18,12 +18,12 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
     var unitlength = 50;
     var homescale = 0.5;
 
-    var displaymultiplier = 0.15;
+    var displaymultiplier = 0.1;
 
     var docklabelvalues = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     var docklabels = new Array ();
 
-    var cagepadding = 5;
+    var cagepadding = 2;
 
     window.bl.toolTag = 'numberbonds';
     var Tool = ToolLayer.extend({
@@ -45,8 +45,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
 
             //dock labels
             for(var i = 0; i<10; i++){
-                docklabels[i] = cc.LabelTTF.create('x ' + docklabelvalues[i], "mikadoBold", 15);
-                docklabels[i]._position = (cc.p(15, 50 + (barheight/1.2) * (i + 1)));
+                docklabels[i] = cc.LabelTTF.create('x ' + docklabelvalues[i], "mikadoBold", 20);
+                docklabels[i]._position = (cc.p(20, 50 + (barheight/1.2) * (i + 1)));
                 self.addChild(docklabels[i]);
             }
 
@@ -56,11 +56,11 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                   { value: 1, limit: false, mathml: '<cn>1</cn>' },
                   { value: 2, limit: false, mathml: '<cn>2</cn>' },
                   { value: 3, limit: false, mathml: '<cn>3</cn>' },
-                  { value: 4, limit: false, mathml: '<cn>4</cn>' },
+                  { value: 4, limit: 2,     mathml: '<cn>4</cn>' },
                   { value: 5, limit: false, mathml: '<cn>5</cn>' },
                   { value: 6, limit: false, mathml: '<cn>6</cn>' },
                   { value: 7, limit: false, mathml: '<cn>7</cn>' },
-                  { value: 8, limit: false, mathml: '<cn>8</cn>' },
+                  { value: 8, limit: 4,     mathml: '<cn>8</cn>' },
                   { value: 9, limit: false, mathml: '<cn>9</cn>' },
                   { value: 10, limit: false, mathml: '<cn>10</cn>' }
                 ],
@@ -117,6 +117,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                     }
                   }
                 },
+                labelShown: false,
                 state: '<state><csymbol definitionURL="local://symbols/lists/list0" /><csymbol definitionURL="local://symbols/lists/list1" /></state>',
             }
 
@@ -138,7 +139,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
         _draggableLayer: undefined,
         _prevDraggable: undefined,
                 
-        addNumberBondsBar: function(length, position, question, locked){
+        addNumberBondsBar: function(length, position, question, locked, labelShown){
             var self = this;
 
             if (_.isUndefined(this._draggableLayer)) {
@@ -146,7 +147,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 this.addChild(this._draggableLayer, DRAGGABLE_Z);
             }
             
-            var dg = new NumberBondBar(length, displaymultiplier, locked);
+            var dg = new NumberBondBar(length, displaymultiplier, locked, labelShown);
 
             dg.tag = 'dg-' + this._draggableCounter;            
             dg.setPosition(position);                
@@ -427,7 +428,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                         bar.value,
                         cc.p(cagepadding + dropZonePos.x + (dz._filled +bar.value/2)* unitlength, cagepadding + dropZonePos.y + barheight/2),
                         question,
-                        bar.locked
+                        bar.locked,
+                        question.labelShown
                     );             
                     
                     //add to filledArray etc
@@ -459,7 +461,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                             bar.value,
                             cc.p(40 + (unitlength * bar.value)/4, 50 + (barheight/1.2) * bar.value),
                             question,
-                            false
+                            false,
+                            question.labelShown
                         );
 
                         docklabelvalues[bar.value - 1]++;
@@ -472,11 +475,12 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                             bar.value,
                             cc.p(40 + (unitlength * bar.value)/4, 50 + (barheight/1.2) * bar.value),
                             question,
-                            false
+                            false,
+                            question.labelShown
                         );
                     }
-                    docklabelvalues[bar.value - 1] ='inf';
-                    docklabels[bar.value - 1]._string ='inf';
+                    docklabelvalues[bar.value - 1] ="\u221E";
+                    docklabels[bar.value - 1]._string ="\u221E";
                 }
             });         
 
