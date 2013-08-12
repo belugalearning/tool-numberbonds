@@ -18,7 +18,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
     var unitlength = 50;
     var homescale = 0.5;
 
-    var displaymultiplier = 1;
+    var displaymultiplier = 0.15;
 
     var docklabelvalues = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     var docklabels = new Array ();

@@ -11,8 +11,11 @@ define(['cocos2d', 'draggable'], function (cc, Draggable) {
 
         ctor:function(length, multiplier, locked) {
             this._super();
-            
-            
+
+            var displayAccuracy = 0;
+            if (Math.floor(multiplier) != multiplier){
+                displayAccuracy = multiplier.toString().split(".")[1].length;
+            }
 
             var barheight = 55;
 
@@ -75,7 +78,8 @@ define(['cocos2d', 'draggable'], function (cc, Draggable) {
             
 
             this.setZoomOnTouchDown(false);
-            this.setLabel(length * multiplier);
+            var label = (length * multiplier).toFixed(displayAccuracy);
+            this.setLabel(label);
             this._length = length;
 
             if (locked == true){
