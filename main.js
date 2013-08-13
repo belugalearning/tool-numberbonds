@@ -4,7 +4,7 @@ require.config({
     }
 });
 
-define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer', 'draggable', 'dropzone', 'draggableLayer', 'numberbondbar' ], function (exports, cc, QLayer, BLDrawNode, Polygon, ToolLayer, Draggable, DropZone, DraggableLayer, NumberBondBar) {
+define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 'dropzone', 'draggableLayer', 'numberbondbar' ], function (exports, cc, QLayer, BLDrawNode, ToolLayer, Draggable, DropZone, DraggableLayer, NumberBondBar) {
     'use strict';
 
     var DRAGGABLE_PREFIX = 'DRAGGABLE_';
