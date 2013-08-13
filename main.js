@@ -1,10 +1,11 @@
 require.config({
     paths: {
-        'numberbondbar': '../../tools/numberbonds/numberbondbar'
+        'numberbondbar': '../../tools/numberbonds/numberbondbar',
+        'numberbonddropzone': '../../tools/numberbonds/numberbonddropzone'
     }
 });
 
-define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer', 'draggable', 'dropzone', 'draggableLayer', 'numberbondbar' ], function (exports, cc, QLayer, BLDrawNode, Polygon, ToolLayer, Draggable, DropZone, DraggableLayer, NumberBondBar) {
+define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer', 'draggable', 'dropzone', 'draggableLayer', 'numberbondbar', 'numberbonddropzone' ], function (exports, cc, QLayer, BLDrawNode, Polygon, ToolLayer, Draggable, DropZone, DraggableLayer, NumberBondBar, NumberBondDropZone) {
     'use strict';
 
     var DRAGGABLE_PREFIX = 'DRAGGABLE_';
@@ -18,12 +19,12 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
     var unitlength = 50;
     var homescale = 0.5;
 
-    var displaymultiplier = 2;
+    var displaymultiplier = 12;
 
     var docklabelvalues = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     var docklabels = new Array ();
 
-    var cagepadding = 2;
+    var cagepadding = 1;
 
     window.bl.toolTag = 'numberbonds';
     var Tool = ToolLayer.extend({
@@ -68,31 +69,31 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                   lists: {
                     list0: {
                       definitionURL: 'local://symbols/lists/list0',
-                      capacity: 12,
+                      capacity: 10,
                       locked: true,
-                      mathml: '<list><members><csymbol definitionURL="local://symbols/bars/bar0" /></members></list>'
+                      mathml: '<list><members><csymbol definitionURL="local://symbols/bars/bar0" /><csymbol definitionURL="local://symbols/bars/bar1" /></members></list>'
                     },
                     list1: {
                       definitionURL: 'local://symbols/lists/list0',
-                      capacity: 11,
+                      capacity: 10,
                       locked: false,
                       mathml: '<list><members></members></list>'
                     },
                     list2: {
                       definitionURL: 'local://symbols/lists/list0',
-                      capacity: 11,
+                      capacity: 10,
                       locked: false,
                       mathml: '<list><members></members></list>'
                     },
                     list3: {
                       definitionURL: 'local://symbols/lists/list0',
-                      capacity: 11,
+                      capacity: 10,
                       locked: false,
                       mathml: '<list><members></members></list>'
                     },
                     list4: {
                       definitionURL: 'local://symbols/lists/list1',
-                      capacity: 11,
+                      capacity: 10,
                       locked: true,
                       mathml: '<list><members><csymbol definitionURL="local://symbols/bars/bar2" /></members></list>'
                     }
@@ -100,13 +101,13 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                   bars: {
                     bar0: {
                       definitionURL: 'local://symbols/bars/bar0',
-                      value: 12,
+                      value: 7,
                       locked: false,
                       mathml: '<cn>6</cn>'
                     },
                     bar1: {
                       definitionURL: 'local://symbols/bars/bar1',
-                      value: 5,
+                      value: 3,
                       mathml: '<cn>5</cn>'
                     },
                     bar2: {
@@ -362,9 +363,9 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
             return dz;
         }, 
         
-        addDropZone: function (position, shape, label, definitionURL, bgResource) {
+        addNumberBondDropZone: function (position, shape, label, definitionURL, bgResource) {
             var args = Array.prototype.slice.call(arguments);
-            var dz = new DropZone();
+            var dz = new NumberBondDropZone();
             args.unshift(dz);
             return this._addDropZone.apply(this, args);
         },
@@ -383,7 +384,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'polygonclip', 'toollayer'
                 //extract index from 'list0/1/2...'
                 i = parseInt(i.slice(4));
 
-                var dz = self.addDropZone({
+                var dz = self.addNumberBondDropZone({
                     x:400, y:margin + (Object.keys(question.symbols.lists).length - 1 - i) * (barheight + margin)},
                     [
                         {
