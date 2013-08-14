@@ -17,9 +17,9 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
     var barheight = 55;
 
     var unitlength = 50;
-    var homescale = 0.5;
+    var homescale = 0.55;
 
-    var displaymultiplier = 12;
+    var displaymultiplier = 1;
 
     var docklabelvalues = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     var docklabels = new Array ();
@@ -42,11 +42,30 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
 
             cc.Director.getInstance().setDisplayStats(false);
 
-            this.setBackground(bl.getResource('deep_water_background'));
+            this.setBackground(window.bl.getResource('deep_water_background'));
 
-            //dock labels
+            // var clc = cc.Layer.create();
+            // var background = new cc.Sprite();
+            // background.initWithFile(window.bl.getResource('deep_water_background'));
+            // background.setPosition(this._windowSize.width/2, this._windowSize.height/2);
+            // clc.addChild(background);
+            // this.addChild(clc,0);
+
+            // add dock background & question box
+            //this.addBackgroundComponent(window.bl.getResource('question_tray'), cc.p(this._windowSize.width / 2, 700));
+            this.addBackgroundComponent(window.bl.getResource('NB_Dock_Bottom'), cc.p(40, 50));
+            for(var i=1;i<11;i++){
+               this.addBackgroundComponent(window.bl.getResource('NB_Dock_Middle60'), cc.p(40, 50 + (barheight/1.2) * i)); 
+            }
+            this.addBackgroundComponent(window.bl.getResource('NB_Dock_Top'), cc.p(40, 50 + (barheight/1.2)*11));
+            
+            
+
+            //add dockquantity badge
+
+            //add dock labels
             for(var i = 0; i<10; i++){
-                docklabels[i] = cc.LabelTTF.create('x ' + docklabelvalues[i], "mikadoBold", 20);
+                docklabels[i] = cc.LabelTTF.create('x ' + docklabelvalues[i], "mikadoBold", 13);
                 docklabels[i]._position = (cc.p(20, 50 + (barheight/1.2) * (i + 1)));
                 self.addChild(docklabels[i]);
             }
@@ -54,15 +73,15 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
             var newQuestion = {
                 tool: 'number_bonds',
                 spawnPoints: [
-                  { value: 1, limit: false, mathml: '<cn>1</cn>' },
-                  { value: 2, limit: false, mathml: '<cn>2</cn>' },
-                  { value: 3, limit: false, mathml: '<cn>3</cn>' },
+                  { value: 1, limit: 10, mathml: '<cn>1</cn>' },
+                  { value: 2, limit: 10, mathml: '<cn>2</cn>' },
+                  { value: 3, limit: 10, mathml: '<cn>3</cn>' },
                   { value: 4, limit: 2,     mathml: '<cn>4</cn>' },
-                  { value: 5, limit: false, mathml: '<cn>5</cn>' },
-                  { value: 6, limit: false, mathml: '<cn>6</cn>' },
-                  { value: 7, limit: false, mathml: '<cn>7</cn>' },
+                  { value: 5, limit: 10, mathml: '<cn>5</cn>' },
+                  { value: 6, limit: 10, mathml: '<cn>6</cn>' },
+                  { value: 7, limit: 10, mathml: '<cn>7</cn>' },
                   { value: 8, limit: 4,     mathml: '<cn>8</cn>' },
-                  { value: 9, limit: false, mathml: '<cn>9</cn>' },
+                  { value: 9, limit: 10, mathml: '<cn>9</cn>' },
                   { value: 10, limit: false, mathml: '<cn>10</cn>' }
                 ],
                 symbols: {
@@ -94,7 +113,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     list4: {
                       definitionURL: 'local://symbols/lists/list1',
                       capacity: 10,
-                      locked: true,
+                      locked: false,
                       mathml: '<list><members><csymbol definitionURL="local://symbols/bars/bar2" /></members></list>'
                     }
                   },
@@ -242,7 +261,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                         //add another bar when one is taken away
                         var dg = self.addNumberBondsBar(
                             draggable._length,
-                            cc.p(40 + (unitlength * draggable._length)/4, 50 + (barheight/1.2) * draggable._length),
+                            cc.p(40 + (unitlength * draggable._length * homescale * 0.5), 50 + (barheight/1.2) * draggable._length),
                             question,
                             false,
                             question.labelShown
@@ -442,7 +461,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     dg.setScale(1);
                     
                     //overwrite homeposition to dock - no need for this anymore if bars are automatically locked
-                    dg._homePosition = cc.p(40 + (unitlength * bar.value)/4, 50 + (barheight/1.2) * bar.value);
+                    dg._homePosition = cc.p(40 + (unitlength * bar.value * homescale * 0.5), 50 + (barheight/1.2) * bar.value);
                 });
 
                 if(container.locked == true){
@@ -461,7 +480,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                         
                         var dg = self.addNumberBondsBar(
                             bar.value,
-                            cc.p(40 + (unitlength * bar.value)/4, 50 + (barheight/1.2) * bar.value),
+                            cc.p(40 + (unitlength * bar.value * homescale * 0.5), 50 + (barheight/1.2) * bar.value),
                             question,
                             false,
                             question.labelShown
@@ -475,7 +494,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     for(var j = 0; j < 2; j++){
                         var dg = self.addNumberBondsBar(
                             bar.value,
-                            cc.p(40 + (unitlength * bar.value)/4, 50 + (barheight/1.2) * bar.value),
+                            cc.p(40 + (unitlength * bar.value * homescale * 0.5), 50 + (barheight/1.2) * bar.value),
                             question,
                             false,
                             question.labelShown
