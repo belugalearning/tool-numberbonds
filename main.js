@@ -13,6 +13,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
 
     var DROPZONE_Z = 0;
     var DRAGGABLE_Z = 1;
+    var BADGE_Z = 3;
 
     var barheight = 55;
 
@@ -53,21 +54,32 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
 
             // add dock background & question box
             //this.addBackgroundComponent(window.bl.getResource('question_tray'), cc.p(this._windowSize.width / 2, 700));
-            this.addBackgroundComponent(window.bl.getResource('NB_Dock_Bottom'), cc.p(40, 50));
+            this.addBackgroundComponent(window.bl.getResource('nb_dock_bottom'), cc.p(42, 50));
+
             for(var i=1;i<11;i++){
-               this.addBackgroundComponent(window.bl.getResource('NB_Dock_Middle60'), cc.p(40, 50 + (barheight/1.2) * i)); 
+               this.addBackgroundComponent(window.bl.getResource('nb_dock_middle60'), cc.p(42, 50 + (barheight/1.2) * i)); 
             }
-            this.addBackgroundComponent(window.bl.getResource('NB_Dock_Top'), cc.p(40, 50 + (barheight/1.2)*11));
+
+            this.addBackgroundComponent(window.bl.getResource('nb_dock_top'), cc.p(42, 50 + (barheight/1.2) * 11));
             
             
 
-            //add dockquantity badge
+            
 
-            //add dock labels
+            
             for(var i = 0; i<10; i++){
-                docklabels[i] = cc.LabelTTF.create('x ' + docklabelvalues[i], "mikadoBold", 13);
-                docklabels[i]._position = (cc.p(20, 50 + (barheight/1.2) * (i + 1)));
-                self.addChild(docklabels[i]);
+                //add dockquantity badge
+                var clc = cc.Layer.create();
+                var background = new cc.Sprite();
+                background.initWithFile(window.bl.getResource('nb_notification'));
+                background.setPosition(cc.p(70 + (unitlength * i * homescale), 60 + (barheight/1.2) * (i + 1)));
+                clc.addChild(background);
+                this.addChild(clc, BADGE_Z);
+
+                //add dock labelss
+                docklabels[i] = cc.LabelTTF.create('x ' + docklabelvalues[i], "mikadoBold", 10);
+                docklabels[i]._position = (cc.p(72 + (unitlength * i * homescale), 60 + (barheight/1.2) * (i + 1)));
+                clc.addChild(docklabels[i]);
             }
 
             var newQuestion = {
@@ -488,7 +500,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
 
                         docklabelvalues[bar.value - 1]++;
                     }
-                    docklabels[bar.value - 1]._string ='x ' + docklabelvalues[bar.value - 1];
+                    docklabels[bar.value - 1].setString('x ' + docklabelvalues[bar.value - 1]);
                 } else {
                     // make two blocks. if one gets dragged out, another is created in its place.
                     for(var j = 0; j < 2; j++){
@@ -501,7 +513,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                         );
                     }
                     docklabelvalues[bar.value - 1] ="\u221E";
-                    docklabels[bar.value - 1]._string ="\u221E";
+                    docklabels[bar.value - 1].setString("\u221E");
+                    docklabels[bar.value - 1].setFontSize(20);
                 }
             });         
 
