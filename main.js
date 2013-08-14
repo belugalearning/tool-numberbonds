@@ -20,7 +20,11 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
     var unitlength = 50;
     var homescale = 0.55;
 
-    var displaymultiplier = 1;
+    var displaymultiplier = 0.3;
+    var displayAccuracy = 0;
+            if (Math.floor(displaymultiplier) != displaymultiplier){
+                displayAccuracy = displaymultiplier.toString().split(".")[1].length;
+            }
 
     var docklabelvalues = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     var docklabels = new Array ();
@@ -54,12 +58,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
             }
 
             this.addBackgroundComponent(window.bl.getResource('nb_dock_top'), cc.p(42, 50 + (barheight/1.2) * 11));
-            
-            
-
-            
-
-            
+   
             for(var i = 0; i<10; i++){
                 //add dockquantity badge
                 var clc = cc.Layer.create();
@@ -253,7 +252,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     //update info on what's in dropzone & change label (i.e. remove this bar from the dropzone's filledArray)
                     oldDropZone._filledArray.splice(ix, 1);
                     oldDropZone._filled -= draggable._length;
-                    oldDropZone._label._string = oldDropZone._filled * displaymultiplier;
+                    oldDropZone._label._string = (oldDropZone._filled * displaymultiplier).toFixed(displayAccuracy);
                     //shift everything on the right of moved block to the left
                     for (var i = ix; i < oldDropZone._filledArray.length; i++) {
                         var bar = oldDropZone._filledArray[i];
@@ -321,7 +320,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
 
                     //update info on what's in dropzone
                     newDropZone._filled += draggable._length;
-                    newDropZone._label._string = newDropZone._filled * displaymultiplier;
+                    newDropZone._label._string = (newDropZone._filled * displaymultiplier).toFixed(displayAccuracy);
                     draggable.setScale(1);
 
                     //check if all full, i.e. check if complete
@@ -347,7 +346,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     //update info on what's in dropzone
                     oldDropZone._filledArray.push(draggable);
                     oldDropZone._filled += draggable._length;
-                    oldDropZone._label._string = oldDropZone._filled * displaymultiplier;
+                    oldDropZone._label._string = (oldDropZone._filled * displaymultiplier).toFixed(displayAccuracy);
 
                     draggable.setScale(1);
                     
@@ -440,7 +439,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                 dz._filled = 0;
                 dz._filledArray = new Array();
                 dz._length = container.capacity;
-                dz._label._string = dz._filled * displaymultiplier;
+                dz._label._string = (dz._filled * displaymultiplier).toFixed(displayAccuracy);
 
                 //get list of preinitialised bars in this dropzone
                 var members = $($.parseXML(container.mathml)).find('csymbol').toArray().map(function(csymbol) {
@@ -468,7 +467,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     dz._filledArray.push(dg);
                     dz._filled += dg._length;
                     //change label for dropzone
-                    dz._label._string = dz._filled * displaymultiplier;
+                    dz._label._string = (dz._filled * displaymultiplier).toFixed(displayAccuracy);
                     dg.setScale(1);
                     
                     //overwrite homeposition to dock - no need for this anymore if bars are automatically locked
