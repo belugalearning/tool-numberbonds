@@ -20,7 +20,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
     var unitlength = 50;
     var homescale = 0.55;
 
-    var displaymultiplier = 0.3;
+    var displaymultiplier = 1;
     var displayAccuracy = 0;
             if (Math.floor(displaymultiplier) != displaymultiplier){
                 displayAccuracy = displaymultiplier.toString().split(".")[1].length;
@@ -250,15 +250,11 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     var ix = oldDropZone._filledArray.indexOf(draggable);
 
                     //update info on what's in dropzone & change label (i.e. remove this bar from the dropzone's filledArray)
-                    oldDropZone._filledArray.splice(ix, 1);
-                    oldDropZone._filled -= draggable._length;
-                    oldDropZone._label._string = (oldDropZone._filled * displaymultiplier).toFixed(displayAccuracy);
+                    draggable.removeFromDropZone(oldDropZone, ix, unitlength);
+                    oldDropZone.updateLabel(displaymultiplier, displayAccuracy);
+
                     //shift everything on the right of moved block to the left
-                    for (var i = ix; i < oldDropZone._filledArray.length; i++) {
-                        var bar = oldDropZone._filledArray[i];
-                        var oldPos = bar.getPosition();
-                        bar.animateToPosition(cc.p(oldPos.x - draggable._length * unitlength, oldPos.y));
-                    }
+                    
                 }
                 
                 else{//otherwise, bar was in dock - change dock count + label
@@ -275,8 +271,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     } else{
                         docklabelvalues[draggable._length - 1]--;
                         docklabels[draggable._length - 1].setString(docklabelvalues[draggable._length - 1]);
-                        docklabels[draggable._length - 1].setHorizontalAlignment(cc.TEXT_ALIGNMENT_CENTER);
-                        docklabels[draggable._length - 1].setVerticalAlignment(cc.TEXT_ALIGNMENT_CENTER);
                     }
                 }
 
@@ -300,27 +294,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                         draggableIndex = newDropZone._filledArray.length;
                     }
 
-                    //shift everything to the right of draggable by its length
-                    for (i = draggableIndex; i < newDropZone._filledArray.length; i++){
-                        var currentPos = newDropZone._filledArray[i].getPosition();
-
-                        newDropZone._filledArray[i].animateToPosition(cc.p(
-                            currentPos.x + draggable._length * unitlength,
-                            currentPos.y)
-                        );
-                    }
-
-                    //add to filled array
-                    newDropZone._filledArray.splice(draggableIndex, 0, draggable);
-
-                    //add draggable
-                    draggable.animateToPosition(cc.p(
-                        cagepadding + dropZonePos.x + newPos * unitlength,
-                        cagepadding + dropZonePos.y), true);
-
-                    //update info on what's in dropzone
-                    newDropZone._filled += draggable._length;
-                    newDropZone._label._string = (newDropZone._filled * displaymultiplier).toFixed(displayAccuracy);
+                    draggable.addToDropZone(newDropZone, draggableIndex, newPos, unitlength, cagepadding);
+                    newDropZone.updateLabel(displaymultiplier, displayAccuracy);
                     draggable.setScale(1);
 
                     //check if all full, i.e. check if complete
@@ -336,17 +311,11 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     }
 
                 } else if (oldDropZone && newDropZone) { // has old dropzone, dragged to filled/locked dropzone
+                    console.log('!!!!!'); //Does this ever even happen?!?!
                     //put it back in its old drop zone
-                    var oldDropZonePos = oldDropZone.getPosition();
-                    
-                    draggable.setPosition(cc.p(
-                        cagepadding + oldDropZonePos.x + oldDropZone._filled * unitlength,
-                        cagepadding + oldDropZonePos.y), true);
+                    draggable.returnToOldDropZone(oldDropZone, unitlength, cagepadding);
 
-                    //update info on what's in dropzone
-                    oldDropZone._filledArray.push(draggable);
-                    oldDropZone._filled += draggable._length;
-                    oldDropZone._label._string = (oldDropZone._filled * displaymultiplier).toFixed(displayAccuracy);
+                    oldDropZone.updateLabel(displaymultiplier, displayAccuracy);
 
                     draggable.setScale(1);
                     
@@ -359,8 +328,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     } else{
                         docklabelvalues[draggable._length - 1]++;
                         docklabels[draggable._length - 1].setString(docklabelvalues[draggable._length - 1]);
-                        docklabels[draggable._length - 1].setHorizontalAlignment(cc.TEXT_ALIGNMENT_CENTER);
-                        docklabels[draggable._length - 1].setVerticalAlignment(cc.TEXT_ALIGNMENT_CENTER);
                     }
 
                 }
@@ -439,7 +406,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                 dz._filled = 0;
                 dz._filledArray = new Array();
                 dz._length = container.capacity;
-                dz._label._string = (dz._filled * displaymultiplier).toFixed(displayAccuracy);
+                dz.updateLabel(displaymultiplier, displayAccuracy);
 
                 //get list of preinitialised bars in this dropzone
                 var members = $($.parseXML(container.mathml)).find('csymbol').toArray().map(function(csymbol) {
@@ -467,7 +434,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     dz._filledArray.push(dg);
                     dz._filled += dg._length;
                     //change label for dropzone
-                    dz._label._string = (dz._filled * displaymultiplier).toFixed(displayAccuracy);
+                    dz.updateLabel(displaymultiplier, displayAccuracy);
                     dg.setScale(1);
                     
                     //overwrite homeposition to dock - no need for this anymore if bars are automatically locked
@@ -516,7 +483,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     docklabelvalues[bar.value - 1] ="\u221E";
                     docklabels[bar.value - 1].setString("\u221E");
                     docklabels[bar.value - 1].setFontSize(20);
-                    docklabels[bar.value - 1].setPosition(cc.p(42 + (unitlength * bar.value * homescale), 60 + (barheight/1.2) * (bar.value)));
+                    docklabels[bar.value - 1].setPosition(cc.p(42 + (unitlength * bar.value * homescale), 62 + (barheight/1.2) * (bar.value)));
                     docklabels[bar.value - 1].setHorizontalAlignment(cc.TEXT_ALIGNMENT_CENTER);
                     docklabels[bar.value - 1].setVerticalAlignment(cc.TEXT_ALIGNMENT_CENTER);
                 }

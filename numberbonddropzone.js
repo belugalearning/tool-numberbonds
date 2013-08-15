@@ -20,7 +20,11 @@ define(['cocos2d', 'dropzone'], function (cc, DropZone, _) {
 		    size = this._getPolySize(shape);
 		    this.setContentSize(size);
 			
-		}
+		},
+
+		updateLabel: function(displaymultiplier, displayAccuracy) {
+            this._label._string = (this._filled * displaymultiplier).toFixed(displayAccuracy);            
+        }
 
     });
 

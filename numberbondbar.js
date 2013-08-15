@@ -130,7 +130,58 @@ define(['cocos2d', 'draggable'], function (cc, Draggable) {
             var action = cc.Sequence.create(cc.MoveTo.create(0.2, pos));
             this.runAction(action);
             return;
-        }
+        },
+
+        removeFromDropZone: function (dropzone, index, unitlength) {
+            dropzone._filledArray.splice(index, 1);
+            dropzone._filled -= this._length;
+
+            for (var i = index; i < dropzone._filledArray.length; i++) {
+                var bar = dropzone._filledArray[i];
+                var oldPos = bar.getPosition();
+                bar.animateToPosition(cc.p(oldPos.x - this._length * unitlength, oldPos.y));
+            }
+
+            return;
+        },
+
+        addToDropZone: function (dropzone, index, newPos, unitlength, cagepadding) {
+            //shift everything to the right of draggable by its length
+            for (var i = index; i < dropzone._filledArray.length; i++){
+                var currentPos = dropzone._filledArray[i].getPosition();
+
+                dropzone._filledArray[i].animateToPosition(cc.p(
+                    currentPos.x + this._length * unitlength,
+                    currentPos.y)
+                );
+            }
+
+            //add to filled array
+            dropzone._filledArray.splice(index, 0, this);
+
+            //add draggable
+            var dropZonePos = dropzone.getPosition();
+            this.animateToPosition(cc.p(
+                cagepadding + dropZonePos.x + newPos * unitlength,
+                cagepadding + dropZonePos.y), true);
+
+            //update info on what's in dropzone
+            dropzone._filled += this._length;
+            return;
+        },
+
+        returnToOldDropZone: function (dropzone, unitlength, cagepadding) {
+            var oldDropZonePos = dropzone.getPosition();
+                    
+            this.setPosition(cc.p(
+                cagepadding + oldDropZonePos.x + dropzone._filled * unitlength,
+                cagepadding + oldDropZonePos.y), true);
+
+            //update info on what's in dropzone
+            dropzone._filledArray.push(this);
+            dropzone._filled += this._length;
+            return;
+        }      
 
     });
 
