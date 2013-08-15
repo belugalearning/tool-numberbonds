@@ -214,6 +214,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     }
                 }
 
+                //if block is within a certain vicinity of its last position, or it is dragged to a new dropzone with no space, don't do anything
                 if(
                     bl.isPointInsideArea(position,
                     [
@@ -237,7 +238,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     (newDropZone 
                         && newDropZone != oldDropZone 
                         && draggable._length > newDropZone._length - newDropZone._filled)
-                ){
+                    ){
                     if(!oldDropZone){
                        draggable.setScale(homescale); 
                     }
@@ -248,13 +249,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                 if (oldDropZone) {
                     // remove from oldDropZone if either sending home or migrating to another drop-zone
                     var ix = oldDropZone._filledArray.indexOf(draggable);
-
-                    //update info on what's in dropzone & change label (i.e. remove this bar from the dropzone's filledArray)
                     draggable.removeFromDropZone(oldDropZone, ix, unitlength);
                     oldDropZone.updateLabel(displaymultiplier, displayAccuracy);
-
-                    //shift everything on the right of moved block to the left
-                    
                 }
                 
                 else{//otherwise, bar was in dock - change dock count + label
@@ -294,6 +290,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                         draggableIndex = newDropZone._filledArray.length;
                     }
 
+                    //add to dropzone
                     draggable.addToDropZone(newDropZone, draggableIndex, newPos, unitlength, cagepadding);
                     newDropZone.updateLabel(displaymultiplier, displayAccuracy);
                     draggable.setScale(1);
@@ -309,15 +306,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     if(check != 1){
                         console.log('complete!');
                     }
-
-                } else if (oldDropZone && newDropZone) { // has old dropzone, dragged to filled/locked dropzone
-                    console.log('!!!!!'); //Does this ever even happen?!?!
-                    //put it back in its old drop zone
-                    draggable.returnToOldDropZone(oldDropZone, unitlength, cagepadding);
-
-                    oldDropZone.updateLabel(displaymultiplier, displayAccuracy);
-
-                    draggable.setScale(1);
                     
                 } else {
                     // send to home - change dock count + label
