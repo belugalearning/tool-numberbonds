@@ -168,6 +168,20 @@ define(['cocos2d', 'draggable'], function (cc, Draggable) {
 
             //update info on what's in dropzone
             dropzone._filled += this._length;
+
+            // //add bar to list MathML
+            // var mathmlIndex = 0;
+            // //find mathmlIndex of new <cn> string
+            // var temp = dropZoneMathml;
+            // var cuttingPoint;
+            // for(i = 0; i < (index + 1); i++) {
+            //     cuttingPoint = temp.indexOf("<c");
+            //     temp.slice(cuttingPoint);
+            //     mathmlIndex += cuttingPoint;
+            // }
+
+            // dropZoneMathml = dropZoneMathml.slice(0, mathmlIndex) + "<cn>" + this._length + "</cn>" + dropZoneMathml.slice(mathmlIndex);
+
             return;
         },
 
