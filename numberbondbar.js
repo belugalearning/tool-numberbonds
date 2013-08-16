@@ -115,6 +115,7 @@ define(['cocos2d', 'draggable'], function (cc, Draggable) {
                 return;
             }
             this.setPosition(this._homePosition);
+            this.setScale(0.55);
         },
 
         animateToPosition: function (pos, anchorBottomLeft) {
@@ -136,25 +137,25 @@ define(['cocos2d', 'draggable'], function (cc, Draggable) {
             dropzone._filledArray.splice(index, 1);
             dropzone._filled -= this._length;
 
-            for (var i = index; i < dropzone._filledArray.length; i++) {
-                var bar = dropzone._filledArray[i];
-                var oldPos = bar.getPosition();
-                bar.animateToPosition(cc.p(oldPos.x - this._length * unitlength, oldPos.y));
-            }
+            // for (var i = index; i < dropzone._filledArray.length; i++) {
+            //     var bar = dropzone._filledArray[i];
+            //     var oldPos = bar.getPosition();
+            //     bar.animateToPosition(cc.p(oldPos.x - this._length * unitlength, oldPos.y));
+            // }
 
             return;
         },
 
         addToDropZone: function (dropzone, index, newPos, unitlength, cagepadding) {
-            //shift everything to the right of draggable by its length
-            for (var i = index; i < dropzone._filledArray.length; i++){
-                var currentPos = dropzone._filledArray[i].getPosition();
+            // //shift everything to the right of draggable by its length
+            // for (var i = index; i < dropzone._filledArray.length; i++){
+            //     var currentPos = dropzone._filledArray[i].getPosition();
 
-                dropzone._filledArray[i].animateToPosition(cc.p(
-                    currentPos.x + this._length * unitlength,
-                    currentPos.y)
-                );
-            }
+            //     dropzone._filledArray[i].animateToPosition(cc.p(
+            //         currentPos.x + this._length * unitlength,
+            //         currentPos.y)
+            //     );
+            // }
 
             //add to filled array
             dropzone._filledArray.splice(index, 0, this);
@@ -181,7 +182,19 @@ define(['cocos2d', 'draggable'], function (cc, Draggable) {
             dropzone._filledArray.push(this);
             dropzone._filled += this._length;
             return;
-        }      
+        },
+
+        findDropZone: function (dropZones, position) {
+            var foundDropZone;
+            for (var i = 0; i < dropZones.length; i++) {
+                var dropZone = dropZones[i];
+                if (dropZone.containsPoint(position)) {
+                    foundDropZone = dropZone;
+                    return foundDropZone;
+                }
+            }
+            
+        }
 
     });
 
