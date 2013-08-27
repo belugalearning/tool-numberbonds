@@ -218,7 +218,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
 
                 
                 //if moved out of startDropZone for the first time, remove from startDropZone
-                if (startDropZone && startDropZone != newHoverDropZone && movedFromStartDropZone == false){
+                if (startDropZone && movedFromStartDropZone == false){
                     var ix = startDropZone._filledArray.indexOf(draggable);
                     draggable.removeFromDropZone(startDropZone, ix, unitlength);
                     startDropZone.updateLabel(displaymultiplier, displayAccuracy);
@@ -234,6 +234,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                         var oldDraggableIndex,
                             newDraggableIndex;
 
+                        //find previous index of draggable
                         for (i = 0; i < oldHoverDropZone._filledArray.length; i++){
                            if (oldHoverDropZone._filledArray[i].getPosition().x > tempPosition.x){                            
                                 oldDraggableIndex = i;
@@ -242,6 +243,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                             oldDraggableIndex = oldHoverDropZone._filledArray.length;
                         }
 
+                        //find current index of draggable
                         for (i = 0; i < newHoverDropZone._filledArray.length; i++){
                            if (newHoverDropZone._filledArray[i].getPosition().x > position.x){                            
                                 newDraggableIndex = i;
@@ -251,9 +253,10 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                         }
 
                         if(newDraggableIndex != oldDraggableIndex){
-                            console.log('new ' + newDraggableIndex)
-                            console.log(newHoverDropZone);
                             console.log('old ' + oldDraggableIndex)
+                            console.log('new ' + newDraggableIndex)
+                            console.log(newHoverDropZone)
+
                             //shift everything on the right of moved block to the left
                             for (var i = oldDraggableIndex; i < oldHoverDropZone._filledArray.length; i++) {
                                 var bar = oldHoverDropZone._filledArray[i];
@@ -279,7 +282,9 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                 
                 } else if(oldHoverDropZone != newHoverDropZone){
                     console.log(oldHoverDropZone, newHoverDropZone);
-                    
+                    if(newHoverDropZone && (draggable._length > newHoverDropZone._length - newHoverDropZone._filled)){
+                        reject = true;
+                    } else{                    
                         //if oldDropZone exists, shift the other bars left
                         if (oldHoverDropZone){
                             var draggableIndex = 0;
@@ -321,7 +326,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                                 );
                             }                            
                         }
-                                                           
+                    }                                                           
                 }
                     
                 //set tempPosition
@@ -397,6 +402,22 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
 
 
             });
+
+            // //specific layout function
+            // var dropZones = self.getControls(DROPZONE_PREFIX);
+            // //for each dropzone
+            // for (var i = 0; i < dropZones.length; i++) {
+            //     var dropZone = dropZones[i];
+            //     var marker = 0;
+            //     //iterate through bars
+            //     for (var j = 0; j < dropZone._filledArray.length; j++){
+            //         //animate to correct positions
+            //         dropZone._filledArray[j].animateToPosition(
+            //             cc.p(dropZone.getPosition().x + marker * unitlength, dropZone.getPosition().y + barheight/2)
+            //         );
+            //         marker += dropZone._filledArray[j]._length;
+            //     }
+            // }
 
             this._draggableLayer.addChild(dg, DRAGGABLE_Z);
             this.registerControl(DRAGGABLE_PREFIX + this._draggableCounter, dg);
