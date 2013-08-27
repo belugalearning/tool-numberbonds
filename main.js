@@ -161,7 +161,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
             dg.setPosition(position);                
             dg.setScale(homescale);
             
-            var movedFromStartDropZone = 0;
+            var movedFromStartDropZone = false;
             var tempPosition;
             var reject = false;
 
@@ -179,7 +179,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                 //find startDropZone
                 // startDropZone = draggable.findDropZone(dropZones, draggable._lastPosition);
                 // console.log(startDropZone)
-                if(movedFromStartDropZone == 0){
+                if(movedFromStartDropZone == false){
                     for (var i = 0; i < dropZones.length; i++) {
                         var dropZone = dropZones[i];
                         if (dropZone.containsPoint(draggable._lastPosition)) {
@@ -218,19 +218,19 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
 
                 
                 //if moved out of startDropZone for the first time, remove from startDropZone
-                if (startDropZone && startDropZone != newHoverDropZone && movedFromStartDropZone == 0){
+                if (startDropZone && startDropZone != newHoverDropZone && movedFromStartDropZone == false){
                     var ix = startDropZone._filledArray.indexOf(draggable);
                     draggable.removeFromDropZone(startDropZone, ix, unitlength);
                     startDropZone.updateLabel(displaymultiplier, displayAccuracy);
 
                     //flag "moved from original dropzone"
-                    movedFromStartDropZone = 1;
+                    movedFromStartDropZone = true;
                 }
 
                 //if oldDropZone is different from newDropZone
                 if (newHoverDropZone && newHoverDropZone == oldHoverDropZone){ //else if oldDropZone is the same as newDropZone, only shift the necessary blocks 
                     //REVIEW - have a feeling this may not be necessary now?
-                    if (draggable._length <= newHoverDropZone._length - newHoverDropZone._filled){
+                    if ((newHoverDropZone == startDropZone) || (draggable._length <= newHoverDropZone._length - newHoverDropZone._filled)){
                         var oldDraggableIndex,
                             newDraggableIndex;
 
@@ -278,11 +278,10 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     }
                 
                 } else if(oldHoverDropZone != newHoverDropZone){
-                    if(draggable._length > newHoverDropZone._length - newHoverDropZone._filled){
-                        reject = true;
-                    } else{
+                    console.log(oldHoverDropZone, newHoverDropZone);
+                    
                         //if oldDropZone exists, shift the other bars left
-                        if (oldHoverDropZone && (draggable._length <= oldHoverDropZone._length - oldHoverDropZone._filled)){
+                        if (oldHoverDropZone){
                             var draggableIndex = 0;
                             //find old index
                             for (i = 0; i < oldHoverDropZone._filledArray.length; i++){
@@ -301,7 +300,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                         }
 
                         //if newDropZone exists, shift the other bars right
-                        if (newHoverDropZone && (draggable._length <= newHoverDropZone._length - newHoverDropZone._filled)){
+                        if (newHoverDropZone){
                             //find new index
                             var draggableIndex = 0;
 
@@ -322,7 +321,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                                 );
                             }                            
                         }
-                    }                                       
+                                                           
                 }
                     
                 //set tempPosition
@@ -340,7 +339,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
             dg.onMoveEnded(function (position, draggable) {
 
                 console.log('reject  ' +reject)
-                if (reject != 1){
+                if (reject == false){
                     //find right dropzone
                     var dropZones = self.getControls(DROPZONE_PREFIX);
                     var newDropZone = draggable.findDropZone(dropZones, position);
@@ -374,7 +373,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     }
 
                     //reset startDropZone counter
-                    movedFromStartDropZone = 0;
+                    movedFromStartDropZone = false;
 
                     if(question.spawnPoints[draggable._length - 1].limit == false){
                         //add another bar when one is taken away
@@ -393,8 +392,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                 } else {
                     draggable.returnToHomePosition();
                 }
-
-                reject = 0;
+                //reset rejection status
+                reject = false;
 
 
             });
