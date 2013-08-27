@@ -163,7 +163,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
             
             var movedFromStartDropZone = 0;
             var tempPosition;
-            var reject = 0;
+            var reject = false;
 
             dg.onMoved(function (position, draggable) {
 
@@ -278,50 +278,51 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     }
                 
                 } else if(oldHoverDropZone != newHoverDropZone){
-                    
-                    //if oldDropZone exists, shift the other bars left
-                    if (oldHoverDropZone && (draggable._length <= oldHoverDropZone._length - oldHoverDropZone._filled)){
-                        var draggableIndex = 0;
-                        //find old index
-                        for (i = 0; i < oldHoverDropZone._filledArray.length; i++){
-                           if (oldHoverDropZone._filledArray[i].getPosition().x > position.x){                            
-                                draggableIndex = i;
-                                break;
+                    if(draggable._length > newHoverDropZone._length - newHoverDropZone._filled){
+                        reject = true;
+                    } else{
+                        //if oldDropZone exists, shift the other bars left
+                        if (oldHoverDropZone && (draggable._length <= oldHoverDropZone._length - oldHoverDropZone._filled)){
+                            var draggableIndex = 0;
+                            //find old index
+                            for (i = 0; i < oldHoverDropZone._filledArray.length; i++){
+                               if (oldHoverDropZone._filledArray[i].getPosition().x > position.x){                            
+                                    draggableIndex = i;
+                                    break;
+                                }
+                            }
+
+                            //shift bars left
+                            for (var i = draggableIndex; i < oldHoverDropZone._filledArray.length; i++) {
+                                var bar = oldHoverDropZone._filledArray[i];
+                                var oldPos = bar.getPosition();
+                                bar.animateToPosition(cc.p(oldPos.x - this._length * unitlength, oldPos.y));
                             }
                         }
 
-                        //shift bars left
-                        for (var i = draggableIndex; i < oldHoverDropZone._filledArray.length; i++) {
-                            var bar = oldHoverDropZone._filledArray[i];
-                            var oldPos = bar.getPosition();
-                            bar.animateToPosition(cc.p(oldPos.x - this._length * unitlength, oldPos.y));
-                        }
-                    }
+                        //if newDropZone exists, shift the other bars right
+                        if (newHoverDropZone && (draggable._length <= newHoverDropZone._length - newHoverDropZone._filled)){
+                            //find new index
+                            var draggableIndex = 0;
 
-                    //if newDropZone exists, shift the other bars right
-                    if (newHoverDropZone && (draggable._length <= newHoverDropZone._length - newHoverDropZone._filled)){
-                        //find new index
-                        var draggableIndex = 0;
-
-                        for (i = 0; i < newHoverDropZone._filledArray.length; i++){
-                           if (newHoverDropZone._filledArray[i].getPosition().x > position.x){                            
-                                draggableIndex = i;
-                                break;
+                            for (i = 0; i < newHoverDropZone._filledArray.length; i++){
+                               if (newHoverDropZone._filledArray[i].getPosition().x > position.x){                            
+                                    draggableIndex = i;
+                                    break;
+                                }
                             }
+
+                            //shift everything to the right of draggable by its length
+                            for (var i = draggableIndex; i < newHoverDropZone._filledArray.length; i++){
+                                var currentPos = newHoverDropZone._filledArray[i].getPosition();
+
+                                newHoverDropZone._filledArray[i].animateToPosition(cc.p(
+                                    currentPos.x + this._length * unitlength,
+                                    currentPos.y)
+                                );
+                            }                            
                         }
-
-
-                        //shift everything to the right of draggable by its length
-                        for (var i = draggableIndex; i < newHoverDropZone._filledArray.length; i++){
-                            var currentPos = newHoverDropZone._filledArray[i].getPosition();
-
-                            newHoverDropZone._filledArray[i].animateToPosition(cc.p(
-                                currentPos.x + this._length * unitlength,
-                                currentPos.y)
-                            );
-                        }                            
-                    }
-                    
+                    }                                       
                 }
                     
                 //set tempPosition
@@ -345,25 +346,32 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     var newDropZone = draggable.findDropZone(dropZones, position);
                     console.log(newDropZone);
 
-                    //find out draggable's index in dropzone
-                    var dropZonePos = newDropZone.getPosition();
-                    var draggableIndex = 0;
-                    var newPos = 0;
+                    if(newDropZone){
+                        //find out draggable's index in dropzone
+                        var dropZonePos = newDropZone.getPosition();
+                        var draggableIndex = 0;
+                        var newPos = 0;
 
-                    for (var i = 0; i < newDropZone._filledArray.length; i++){
-                        if (newDropZone._filledArray[i].getPosition().x < position.x){                            
-                            newPos += newDropZone._filledArray[i]._length;
-                        } else {
-                            draggableIndex = i;
-                            break;
+                        for (var i = 0; i < newDropZone._filledArray.length; i++){
+                            if (newDropZone._filledArray[i].getPosition().x < position.x){                            
+                                newPos += newDropZone._filledArray[i]._length;
+                            } else {
+                                draggableIndex = i;
+                                break;
+                            }
+                            draggableIndex = newDropZone._filledArray.length;
                         }
-                        draggableIndex = newDropZone._filledArray.length;
-                    }
 
-                    //add to dropzone
-                    draggable.addToDropZone(newDropZone, draggableIndex, newPos, unitlength, cagepadding);
-                    newDropZone.updateLabel(displaymultiplier, displayAccuracy);
-                    draggable.setScale(1);
+                        //add to dropzone
+                        draggable.addToDropZone(newDropZone, draggableIndex, newPos, unitlength, cagepadding);
+                        newDropZone.updateLabel(displaymultiplier, displayAccuracy);
+                        draggable.setScale(1);
+                    // } else if(oldDropZone){
+                    //     //return to last position move blocks
+                    }else{
+                        //return to dock
+                        draggable.returnToHomePosition();   
+                    }
 
                     //reset startDropZone counter
                     movedFromStartDropZone = 0;
@@ -383,8 +391,10 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     }
 
                 } else {
-                    draggable.returnToLastPosition(true);
+                    draggable.returnToHomePosition();
                 }
+
+                reject = 0;
 
 
             });
