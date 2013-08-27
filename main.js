@@ -163,7 +163,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
             
             var movedFromStartDropZone = 0;
             var tempPosition;
-            var reject;
+            var reject = 0;
 
             dg.onMoved(function (position, draggable) {
 
@@ -179,12 +179,13 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                 //find startDropZone
                 // startDropZone = draggable.findDropZone(dropZones, draggable._lastPosition);
                 // console.log(startDropZone)
-
-                for (var i = 0; i < dropZones.length; i++) {
-                    var dropZone = dropZones[i];
-                    if (dropZone.containsPoint(draggable._lastPosition)) {
-                        startDropZone = dropZone;
-                        break;
+                if(movedFromStartDropZone == 0){
+                    for (var i = 0; i < dropZones.length; i++) {
+                        var dropZone = dropZones[i];
+                        if (dropZone.containsPoint(draggable._lastPosition)) {
+                            startDropZone = dropZone;
+                            break;
+                        }
                     }
                 }
                 //console.log('startDropZone ' +startDropZone)         
@@ -279,7 +280,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                 } else if(oldHoverDropZone != newHoverDropZone){
                     
                     //if oldDropZone exists, shift the other bars left
-                    if (oldHoverDropZone){
+                    if (oldHoverDropZone && (draggable._length <= oldHoverDropZone._length - oldHoverDropZone._filled)){
                         var draggableIndex = 0;
                         //find old index
                         for (i = 0; i < oldHoverDropZone._filledArray.length; i++){
