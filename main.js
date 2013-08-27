@@ -168,7 +168,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
             dg.onMoved(function (position, draggable) {
 
                 var endpoint = position.x - draggable._contentSize.width/2;
-                draggable.setScale(Math.min (Math.max (0.00002 * homescale * position.x * position.x, homescale), 1) );
+                draggable.setScale(Math.min (Math.max (0.00007 * homescale * position.x * position.x, homescale), 1) );
 
                 var dropZones = self.getControls(DROPZONE_PREFIX);
 
