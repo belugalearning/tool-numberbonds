@@ -78,6 +78,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
 
             var newQuestion = {
                 tool: 'number_bonds',
+                text: 'Make 10.',
                 spawnPoints: [
                   { value: 1, limit: false, mathml: '<cn>1</cn>' },
                   { value: 2, limit: 4, mathml: '<cn>2</cn>' },
@@ -129,7 +130,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                 state: '<state><csymbol definitionURL="local://symbols/lists/list0" /><csymbol definitionURL="local://symbols/lists/list1" /></state>',
             }
 
-            this.setQuestion(newQuestion)
+            this.setQuestion(newQuestion);
+            this.showQuestion();
             return this;
         },
 
@@ -471,6 +473,9 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
         },
         
         setQuestion: function (question) {
+
+            this._super(question);
+
             var self = this;
 
             //add dropzone
