@@ -17,7 +17,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
 
     var barheight = 55;
 
-    var unitlength = 50;
+    var unitlength = 60;
     var homescale = 0.55;
 
     var displaymultiplier = 1;
@@ -49,8 +49,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
 
             this.setBackground(window.bl.getResource('deep_water_background'));
 
-            // add dock background & question box
-            //this.addBackgroundComponent(window.bl.getResource('question_tray'), cc.p(this._windowSize.width / 2, 700));
+            // add dock background
             this.addBackgroundComponent(window.bl.getResource('nb_dock_bottom'), cc.p(42, 50));
 
             for(var i=1;i<11;i++){
@@ -78,7 +77,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
 
             var newQuestion = {
                 tool: 'number_bonds',
-                text: 'Make 10.',
+                text: 'Make 10 in two different ways.',
                 spawnPoints: [
                   { value: 1, limit: false, mathml: '<cn>1</cn>' },
                   { value: 2, limit: 4, mathml: '<cn>2</cn>' },
@@ -149,7 +148,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
         _draggableLayer: undefined,
         _prevDraggable: undefined,
                 
-        addNumberBondsBar: function(length, position, question, locked, labelShown){
+        addNumberBondsBar: function(length, position, question, locked, labelShown, unitlength){
             var self = this;
 
             if (_.isUndefined(this._draggableLayer)) {
@@ -157,7 +156,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                 this.addChild(this._draggableLayer, DRAGGABLE_Z);
             }
             
-            var dg = new NumberBondBar(length, displaymultiplier, locked, labelShown);
+            var dg = new NumberBondBar(length, displaymultiplier, locked, labelShown, unitlength);
 
             dg.tag = 'dg-' + this._draggableCounter;            
             dg.setPosition(position);                
@@ -179,6 +178,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     oldHoverDropZone,
                     newHoverDropZone;
 
+                console.log(draggable._lastPosition.x , draggable._homePosition.x)
                 if (tempPositionCount == 0 && (draggable._lastPosition.x == draggable._homePosition.x) && (draggable._lastPosition.y == draggable._homePosition.y)){
                         if(question.spawnPoints[draggable._length - 1].limit == false){
                         //add another bar when one is taken away
@@ -187,7 +187,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                             cc.p(40 + (unitlength * draggable._length * homescale * 0.5), 50 + (barheight/1.2) * draggable._length),
                             question,
                             false,
-                            question.labelShown
+                            question.labelShown,
+                            unitlength
                         );
                         } else{
                             docklabelvalues[draggable._length - 1]--;
@@ -196,7 +197,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                 }
 
                 //find startDropZone
-                // startDropZone = draggable.findDropZone(dropZones, draggable._lastPosition);
                 if(movedFromStartDropZone == false){
                     for (var i = 0; i < dropZones.length; i++) {
                         var dropZone = dropZones[i];
@@ -208,7 +208,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                 }
                 //find oldHoverDropZone
                 if (tempPosition){
-                    //oldHoverDropZone = draggable.findDropZone(dropZones, tempPosition);
                     for (var i = 0; i < dropZones.length; i++) {
                         var dropZone = dropZones[i];
                         if (dropZone.containsPoint(tempPosition)) {
@@ -226,8 +225,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                         break;
                     }
                 }
-
-                //newHoverDropZone = draggable.findDropZone(dropZones, draggable.position);
                 
                 //if moved out of startDropZone for the first time, remove from startDropZone
                 if (startDropZone && movedFromStartDropZone == false){
@@ -241,7 +238,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
 
                 //if oldDropZone is same as newDropZone AND ignore first tempPosition (reassignment of point hasn't happened yet?)
                 if (newHoverDropZone && newHoverDropZone == oldHoverDropZone && tempPositionCount != 0){ //else if oldDropZone is the same as newDropZone, only shift the necessary blocks 
-                    //REVIEW - have a feeling this may not be necessary now?
                     if ((newHoverDropZone == startDropZone) || (draggable._length <= newHoverDropZone._length - newHoverDropZone._filled)){
                         var oldDraggableIndex,
                             newDraggableIndex;
@@ -294,7 +290,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                             newDraggableIndex;                    
                         //if oldDropZone exists, shift the other bars left
                         if (oldHoverDropZone && (draggable._length <= oldHoverDropZone._length - oldHoverDropZone._filled)){
-                            //oldDraggableIndex = 0;
                             //find old index
                             for (i = 0; i < oldHoverDropZone._filledArray.length; i++){
                                 if (oldHoverDropZone._filledArray[i].getPosition().x > tempPosition.x){
@@ -314,8 +309,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                         //if newDropZone exists, shift the other bars right
                         if (newHoverDropZone){
                             //find new index
-                            //newDraggableIndex = 0;
-
                             for (i = 0; i < newHoverDropZone._filledArray.length; i++){
                                if (newHoverDropZone._filledArray[i].getPosition().x > position.x){                            
                                     newDraggableIndex = i;
@@ -335,7 +328,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                         }
                     }                                                           
                 }
-                    
+
                 //set tempPosition
                 tempPosition = position;
                 tempPositionCount++;
@@ -385,11 +378,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                         newDropZone.updateLabel(displaymultiplier, displayAccuracy);
                         draggable.setScale(1);
 
-                        
-                    // } else if(oldDropZone){
-                    //     //return to last position move blocks
-
-
                     }else{
                         //return to dock
                         draggable.setScale(homescale);
@@ -399,11 +387,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                             docklabels[draggable._length - 1].setString(docklabelvalues[draggable._length - 1]);
                         }
                     }
-
                     //reset startDropZone counter
                     movedFromStartDropZone = false;
-
-                    
 
                 } else {
                     draggable.setScale(homescale);
@@ -418,22 +403,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                 tempPosition = position;
                 tempPositionCount = 0;
             });
-
-            // //specific layout function
-            // var dropZones = self.getControls(DROPZONE_PREFIX);
-            // //for each dropzone
-            // for (var i = 0; i < dropZones.length; i++) {
-            //     var dropZone = dropZones[i];
-            //     var marker = 0;
-            //     //iterate through bars
-            //     for (var j = 0; j < dropZone._filledArray.length; j++){
-            //         //animate to correct positions
-            //         dropZone._filledArray[j].animateToPosition(
-            //             cc.p(dropZone.getPosition().x + marker * unitlength, dropZone.getPosition().y + barheight/2)
-            //         );
-            //         marker += dropZone._filledArray[j]._length;
-            //     }
-            // }
 
             this._draggableLayer.addChild(dg, DRAGGABLE_Z);
             this.registerControl(DRAGGABLE_PREFIX + this._draggableCounter, dg);
@@ -532,7 +501,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                         cc.p(cagepadding + dropZonePos.x + (dz._filled +bar.value/2)* unitlength, cagepadding + dropZonePos.y + barheight/2),
                         question,
                         bar.locked,
-                        question.labelShown
+                        question.labelShown,
+                        unitlength
                     );             
                     
                     //add to filledArray etc
@@ -565,7 +535,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                             cc.p(40 + (unitlength * bar.value * homescale * 0.5), 50 + (barheight/1.2) * bar.value),
                             question,
                             false,
-                            question.labelShown
+                            question.labelShown,
+                            unitlength
                         );
 
                         docklabelvalues[bar.value - 1]++;
@@ -582,7 +553,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                             cc.p(40 + (unitlength * bar.value * homescale * 0.5), 50 + (barheight/1.2) * bar.value),
                             question,
                             false,
-                            question.labelShown
+                            question.labelShown,
+                            unitlength
                         );
                     }
                     docklabelvalues[bar.value - 1] ="\u221E";
@@ -593,9 +565,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     docklabels[bar.value - 1].setVerticalAlignment(cc.TEXT_ALIGNMENT_CENTER);
                 }
             });         
-
         }
-
     });
 
     ToolLayer.create = function () {
@@ -622,7 +592,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
             this.ql.update(dt);
         };
         scene.scheduleUpdate();
-
 
         return scene;
     };

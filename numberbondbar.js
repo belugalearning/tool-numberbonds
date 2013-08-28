@@ -9,17 +9,15 @@ define(['cocos2d', 'draggable'], function (cc, Draggable) {
 
         _length: undefined,
 
-        ctor:function(length, multiplier, locked, labelShown) {
+        ctor:function(length, multiplier, locked, labelShown, unitlength) {
             this._super();
-
+            console.log(unitlength);
             var displayAccuracy = 0;
             if (Math.floor(multiplier) != multiplier){
                 displayAccuracy = multiplier.toString().split(".")[1].length;
             }
 
             var barheight = 55;
-
-            var unitlength = 50;
 
             if (locked == true){
                 var colours = [
