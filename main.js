@@ -177,6 +177,22 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     oldHoverDropZone,
                     newHoverDropZone;
 
+                if (tempPositionCount == 0 && (draggable._lastPosition.x == draggable._homePosition.x) && (draggable._lastPosition.y == draggable._homePosition.y)){
+                        if(question.spawnPoints[draggable._length - 1].limit == false){
+                        //add another bar when one is taken away
+                        var dg = self.addNumberBondsBar(
+                            draggable._length,
+                            cc.p(40 + (unitlength * draggable._length * homescale * 0.5), 50 + (barheight/1.2) * draggable._length),
+                            question,
+                            false,
+                            question.labelShown
+                        );
+                        } else{
+                            docklabelvalues[draggable._length - 1]--;
+                            docklabels[draggable._length - 1].setString(docklabelvalues[draggable._length - 1]);
+                        }
+                }
+
                 //find startDropZone
                 // startDropZone = draggable.findDropZone(dropZones, draggable._lastPosition);
                 if(movedFromStartDropZone == false){
@@ -255,7 +271,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                                     oldPos.x - draggable._length * unitlength,
                                     oldPos.y)
                                 );
-                                console.log('shift left 1')
                             }
                           //shift everything to the right of draggable by its length
                             for (i = newDraggableIndex; i < newHoverDropZone._filledArray.length; i++){
@@ -270,10 +285,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     }
                 
                 } else if(oldHoverDropZone != newHoverDropZone){
-                    console.log("check")
                     if(newHoverDropZone && (draggable._length > newHoverDropZone._length - newHoverDropZone._filled)){
                         reject = true;
-                        console.log(reject)
                     } else{
                         var oldDraggableIndex,
                             newDraggableIndex;                    
@@ -293,7 +306,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                                 var bar = oldHoverDropZone._filledArray[i];
                                 var oldPos = bar.getPosition();
                                 bar.animateToPosition(cc.p(oldPos.x - this._length * unitlength, oldPos.y));
-                                console.log('shift left 2')
                             }
                         }
 
@@ -336,7 +348,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
             });
 
             dg.onMoveEnded(function (position, draggable) {
-                console.log('reject  ' +reject)
                 if (tempPositionCount == 0){
                    draggable.returnToLastPosition(true);
                 } else if (reject == false){
@@ -371,33 +382,33 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                         draggable.addToDropZone(newDropZone, draggableIndex, newPos, unitlength, cagepadding);
                         newDropZone.updateLabel(displaymultiplier, displayAccuracy);
                         draggable.setScale(1);
+
+                        
                     // } else if(oldDropZone){
                     //     //return to last position move blocks
+
+
                     }else{
                         //return to dock
-                        draggable.returnToHomePosition();   
+                        draggable.returnToHomePosition();
+                        if(question.spawnPoints[draggable._length - 1].limit != false){ 
+                            docklabelvalues[draggable._length - 1]++;
+                            docklabels[draggable._length - 1].setString(docklabelvalues[draggable._length - 1]);
+                        }
                     }
 
                     //reset startDropZone counter
                     movedFromStartDropZone = false;
 
-                    if(question.spawnPoints[draggable._length - 1].limit == false){
-                        //add another bar when one is taken away
-                        var dg = self.addNumberBondsBar(
-                            draggable._length,
-                            cc.p(40 + (unitlength * draggable._length * homescale * 0.5), 50 + (barheight/1.2) * draggable._length),
-                            question,
-                            false,
-                            question.labelShown
-                        );
-                    } else{
-                        docklabelvalues[draggable._length - 1]--;
-                        docklabels[draggable._length - 1].setString(docklabelvalues[draggable._length - 1]);
-                    }
+                    
 
                 } else {
                     draggable.setScale(homescale);
                     draggable.returnToHomePosition(true);
+                    if(question.spawnPoints[draggable._length - 1].limit != false){ 
+                        docklabelvalues[draggable._length - 1]++;
+                        docklabels[draggable._length - 1].setString(docklabelvalues[draggable._length - 1]);
+                    }
                 }
                 //reset rejection status
                 reject = false;
