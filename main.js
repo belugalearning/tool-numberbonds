@@ -390,7 +390,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
 
                     }else{
                         //return to dock
-                        draggable.returnToHomePosition();
+                        draggable.setScale(homescale);
+                        draggable.returnToHomePosition(true);
                         if(question.spawnPoints[draggable._length - 1].limit != false){ 
                             docklabelvalues[draggable._length - 1]++;
                             docklabels[draggable._length - 1].setString(docklabelvalues[draggable._length - 1]);
