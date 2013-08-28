@@ -332,9 +332,10 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
             });
 
             dg.onMoveEnded(function (position, draggable) {
-
                 console.log('reject  ' +reject)
-                if (reject == false){
+                if (tempPositionCount == 0){
+                   draggable.returnToLastPosition(true);
+                } else if (reject == false){
                     //find right dropzone
                     var dropZones = self.getControls(DROPZONE_PREFIX);
                     var newDropZone;
@@ -391,7 +392,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     }
 
                 } else {
-                    draggable.returnToHomePosition();
+                    draggable.setScale(homescale);
+                    draggable.returnToHomePosition(true);
                 }
                 //reset rejection status
                 reject = false;
