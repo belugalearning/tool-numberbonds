@@ -255,6 +255,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                                     oldPos.x - draggable._length * unitlength,
                                     oldPos.y)
                                 );
+                                console.log('shift left 1')
                             }
                           //shift everything to the right of draggable by its length
                             for (i = newDraggableIndex; i < newHoverDropZone._filledArray.length; i++){
@@ -269,13 +270,15 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     }
                 
                 } else if(oldHoverDropZone != newHoverDropZone){
+                    console.log("check")
                     if(newHoverDropZone && (draggable._length > newHoverDropZone._length - newHoverDropZone._filled)){
                         reject = true;
+                        console.log(reject)
                     } else{
                         var oldDraggableIndex,
                             newDraggableIndex;                    
                         //if oldDropZone exists, shift the other bars left
-                        if (oldHoverDropZone){
+                        if (oldHoverDropZone && (draggable._length <= oldHoverDropZone._length - oldHoverDropZone._filled)){
                             //oldDraggableIndex = 0;
                             //find old index
                             for (i = 0; i < oldHoverDropZone._filledArray.length; i++){
@@ -290,6 +293,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                                 var bar = oldHoverDropZone._filledArray[i];
                                 var oldPos = bar.getPosition();
                                 bar.animateToPosition(cc.p(oldPos.x - this._length * unitlength, oldPos.y));
+                                console.log('shift left 2')
                             }
                         }
 
