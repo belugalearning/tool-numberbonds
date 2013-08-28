@@ -80,13 +80,13 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                 tool: 'number_bonds',
                 spawnPoints: [
                   { value: 1, limit: false, mathml: '<cn>1</cn>' },
-                  { value: 2, limit: 10, mathml: '<cn>2</cn>' },
+                  { value: 2, limit: 4, mathml: '<cn>2</cn>' },
                   { value: 3, limit: 10, mathml: '<cn>3</cn>' },
                   { value: 4, limit: 2,     mathml: '<cn>4</cn>' },
                   { value: 5, limit: false, mathml: '<cn>5</cn>' },
                   { value: 6, limit: 10, mathml: '<cn>6</cn>' },
                   { value: 7, limit: 10, mathml: '<cn>7</cn>' },
-                  { value: 8, limit: 4,     mathml: '<cn>8</cn>' },
+                  { value: 8, limit: 1,     mathml: '<cn>8</cn>' },
                   { value: 9, limit: 10, mathml: '<cn>9</cn>' },
                   { value: 10, limit: false, mathml: '<cn>10</cn>' }
                 ],
@@ -163,6 +163,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
             
             var movedFromStartDropZone = false;
             var tempPosition;
+            var tempPositionCount = 0;
             var reject = false;
 
             dg.onMoved(function (position, draggable) {
@@ -178,7 +179,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
 
                 //find startDropZone
                 // startDropZone = draggable.findDropZone(dropZones, draggable._lastPosition);
-                // console.log(startDropZone)
                 if(movedFromStartDropZone == false){
                     for (var i = 0; i < dropZones.length; i++) {
                         var dropZone = dropZones[i];
@@ -188,8 +188,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                         }
                     }
                 }
-                //console.log('startDropZone ' +startDropZone)         
-
                 //find oldHoverDropZone
                 if (tempPosition){
                     //oldHoverDropZone = draggable.findDropZone(dropZones, tempPosition);
@@ -200,7 +198,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                             break;
                         }
                     }
-                    //console.log('oldHoverDropZone ' +oldHoverDropZone);
                 }
 
                 //find newHoverDropZone
@@ -211,11 +208,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                         break;
                     }
                 }
-                //console.log('newHoverDropZone ' +newHoverDropZone);
 
                 //newHoverDropZone = draggable.findDropZone(dropZones, draggable.position);
-                //console.log(newHoverDropZone);
-
                 
                 //if moved out of startDropZone for the first time, remove from startDropZone
                 if (startDropZone && movedFromStartDropZone == false){
@@ -227,8 +221,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     movedFromStartDropZone = true;
                 }
 
-                //if oldDropZone is different from newDropZone
-                if (newHoverDropZone && newHoverDropZone == oldHoverDropZone){ //else if oldDropZone is the same as newDropZone, only shift the necessary blocks 
+                //if oldDropZone is same as newDropZone AND ignore first tempPosition (reassignment of point hasn't happened yet?)
+                if (newHoverDropZone && newHoverDropZone == oldHoverDropZone && tempPositionCount != 0){ //else if oldDropZone is the same as newDropZone, only shift the necessary blocks 
                     //REVIEW - have a feeling this may not be necessary now?
                     if ((newHoverDropZone == startDropZone) || (draggable._length <= newHoverDropZone._length - newHoverDropZone._filled)){
                         var oldDraggableIndex,
@@ -236,12 +230,11 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
 
                         //find previous index of draggable
                         for (i = 0; i < oldHoverDropZone._filledArray.length; i++){
-                           if (oldHoverDropZone._filledArray[i].getPosition().x > tempPosition.x){                            
+                           if (oldHoverDropZone._filledArray[i].getPosition().x > tempPosition.x){                        
                                 oldDraggableIndex = i;
                                 break;
                             }
                             oldDraggableIndex = oldHoverDropZone._filledArray.length;
-                            console.log('oldDraggableIndex ' +oldDraggableIndex)
                         }
 
                         //find current index of draggable
@@ -251,14 +244,9 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                                 break;
                             }
                             newDraggableIndex = newHoverDropZone._filledArray.length;
-                            console.log('newDraggableIndex ' +newDraggableIndex)
                         }
 
                         if(newDraggableIndex != oldDraggableIndex){
-                            console.log('old ' + oldDraggableIndex)
-                            console.log('new ' + newDraggableIndex)
-                            console.log(newHoverDropZone)
-
                             //shift everything on the right of moved block to the left
                             for (var i = oldDraggableIndex; i < oldHoverDropZone._filledArray.length; i++) {
                                 var bar = oldHoverDropZone._filledArray[i];
@@ -267,7 +255,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                                     oldPos.x - draggable._length * unitlength,
                                     oldPos.y)
                                 );
-                                
                             }
                           //shift everything to the right of draggable by its length
                             for (i = newDraggableIndex; i < newHoverDropZone._filledArray.length; i++){
@@ -276,15 +263,12 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                                 newHoverDropZone._filledArray[i].animateToPosition(cc.p(
                                     currentPos.x + draggable._length * unitlength,
                                     currentPos.y)
-                                );
-                                
+                                );                              
                             }  
                         }
                     }
                 
                 } else if(oldHoverDropZone != newHoverDropZone){
-                    console.log('leaving old hover dropzone')
-                    console.log(oldHoverDropZone, newHoverDropZone);
                     if(newHoverDropZone && (draggable._length > newHoverDropZone._length - newHoverDropZone._filled)){
                         reject = true;
                     } else{
@@ -295,20 +279,17 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                             //oldDraggableIndex = 0;
                             //find old index
                             for (i = 0; i < oldHoverDropZone._filledArray.length; i++){
-                               if (oldHoverDropZone._filledArray[i].getPosition().x > position.x){                            
+                                if (oldHoverDropZone._filledArray[i].getPosition().x > tempPosition.x){
                                     oldDraggableIndex = i;
-                                    console.log('oldDraggableIndex ' +oldDraggableIndex)
                                     break;
                                 }
                             }
 
                             //shift bars left
                             for (var i = oldDraggableIndex; i < oldHoverDropZone._filledArray.length; i++) {
-                                console.log('draggableIndex = ' +oldDraggableIndex)
                                 var bar = oldHoverDropZone._filledArray[i];
                                 var oldPos = bar.getPosition();
                                 bar.animateToPosition(cc.p(oldPos.x - this._length * unitlength, oldPos.y));
-                                console.log('shifting bars left')
                             }
                         }
 
@@ -320,7 +301,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                             for (i = 0; i < newHoverDropZone._filledArray.length; i++){
                                if (newHoverDropZone._filledArray[i].getPosition().x > position.x){                            
                                     newDraggableIndex = i;
-                                    console.log('newDraggableIndex ' +newDraggableIndex)
                                     break;
                                 }
                             }
@@ -333,7 +313,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                                     currentPos.x + this._length * unitlength,
                                     currentPos.y)
                                 );
-                                console.log('shifting bars right')
                             }                            
                         }
                     }                                                           
@@ -341,6 +320,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     
                 //set tempPosition
                 tempPosition = position;
+                tempPositionCount++;
                
                 self._draggableLayer.reorderChild(draggable, self._draggableCounter);
                 self._draggableLayer.sortAllChildren();
@@ -365,7 +345,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                             break;
                         }
                     }
-                    console.log(newDropZone);
 
                     if(newDropZone){
                         //find out draggable's index in dropzone
@@ -416,8 +395,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                 }
                 //reset rejection status
                 reject = false;
-
-
+                tempPosition = position;
+                tempPositionCount = 0;
             });
 
             // //specific layout function
