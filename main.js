@@ -241,6 +241,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                                 break;
                             }
                             oldDraggableIndex = oldHoverDropZone._filledArray.length;
+                            console.log('oldDraggableIndex ' +oldDraggableIndex)
                         }
 
                         //find current index of draggable
@@ -250,6 +251,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                                 break;
                             }
                             newDraggableIndex = newHoverDropZone._filledArray.length;
+                            console.log('newDraggableIndex ' +newDraggableIndex)
                         }
 
                         if(newDraggableIndex != oldDraggableIndex){
@@ -281,49 +283,57 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     }
                 
                 } else if(oldHoverDropZone != newHoverDropZone){
+                    console.log('leaving old hover dropzone')
                     console.log(oldHoverDropZone, newHoverDropZone);
                     if(newHoverDropZone && (draggable._length > newHoverDropZone._length - newHoverDropZone._filled)){
                         reject = true;
-                    } else{                    
+                    } else{
+                        var oldDraggableIndex,
+                            newDraggableIndex;                    
                         //if oldDropZone exists, shift the other bars left
                         if (oldHoverDropZone){
-                            var draggableIndex = 0;
+                            //oldDraggableIndex = 0;
                             //find old index
                             for (i = 0; i < oldHoverDropZone._filledArray.length; i++){
                                if (oldHoverDropZone._filledArray[i].getPosition().x > position.x){                            
-                                    draggableIndex = i;
+                                    oldDraggableIndex = i;
+                                    console.log('oldDraggableIndex ' +oldDraggableIndex)
                                     break;
                                 }
                             }
 
                             //shift bars left
-                            for (var i = draggableIndex; i < oldHoverDropZone._filledArray.length; i++) {
+                            for (var i = oldDraggableIndex; i < oldHoverDropZone._filledArray.length; i++) {
+                                console.log('draggableIndex = ' +oldDraggableIndex)
                                 var bar = oldHoverDropZone._filledArray[i];
                                 var oldPos = bar.getPosition();
                                 bar.animateToPosition(cc.p(oldPos.x - this._length * unitlength, oldPos.y));
+                                console.log('shifting bars left')
                             }
                         }
 
                         //if newDropZone exists, shift the other bars right
                         if (newHoverDropZone){
                             //find new index
-                            var draggableIndex = 0;
+                            //newDraggableIndex = 0;
 
                             for (i = 0; i < newHoverDropZone._filledArray.length; i++){
                                if (newHoverDropZone._filledArray[i].getPosition().x > position.x){                            
-                                    draggableIndex = i;
+                                    newDraggableIndex = i;
+                                    console.log('newDraggableIndex ' +newDraggableIndex)
                                     break;
                                 }
                             }
 
                             //shift everything to the right of draggable by its length
-                            for (var i = draggableIndex; i < newHoverDropZone._filledArray.length; i++){
+                            for (var i = newDraggableIndex; i < newHoverDropZone._filledArray.length; i++){
                                 var currentPos = newHoverDropZone._filledArray[i].getPosition();
 
                                 newHoverDropZone._filledArray[i].animateToPosition(cc.p(
                                     currentPos.x + this._length * unitlength,
                                     currentPos.y)
                                 );
+                                console.log('shifting bars right')
                             }                            
                         }
                     }                                                           
@@ -347,7 +357,14 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                 if (reject == false){
                     //find right dropzone
                     var dropZones = self.getControls(DROPZONE_PREFIX);
-                    var newDropZone = draggable.findDropZone(dropZones, position);
+                    var newDropZone;
+                    for (var i = 0; i < dropZones.length; i++) {
+                        var dropZone = dropZones[i];
+                        if (dropZone.containsPoint(position)) {
+                            newDropZone = dropZone;
+                            break;
+                        }
+                    }
                     console.log(newDropZone);
 
                     if(newDropZone){
