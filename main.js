@@ -18,7 +18,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
     var barheight = 55;
     var unitlength = undefined;
     var homescale = 0.5;
-    var displaymultiplier = .1;
+    var displaymultiplier = 9.99;
     var displayAccuracy = 0;
             if (Math.floor(displaymultiplier) != displaymultiplier){
                 displayAccuracy = displaymultiplier.toString().split(".")[1].length;
@@ -105,7 +105,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     },
                     list5: {
                       definitionURL: 'local://symbols/lists/list0',
-                      capacity: 12,
+                      capacity: 25,
                       locked: false,
                       mathml: '<list><members></members></list>'
                     }
@@ -536,7 +536,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     //make bar
                     var dg = self.addNumberBondsBar(
                         bar.value,
-                        cc.p(cagepadding + dropZonePos.x + (dz._filled +bar.value/2)* unitlength, cagepadding + dropZonePos.y + barheight/2),
+                        cc.p(cagepadding + dropZonePos.x + (dz._filled + bar.value/2)* unitlength, cagepadding + dropZonePos.y + barheight/2),
                         question,
                         bar.locked,
                         question.labelShown,

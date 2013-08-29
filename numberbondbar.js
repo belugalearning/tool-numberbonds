@@ -77,15 +77,18 @@ define(['cocos2d', 'draggable'], function (cc, Draggable) {
 
             this.initWithSprite(resource);
             
-
             this.setZoomOnTouchDown(false);
+            this._length = length;
+
+            if(displayAccuracy != 0){
+                var fontSize = unitlength/(1.5*displayAccuracy);
+                console.log('fontSize = ' + fontSize)
+            }
             
             if(labelShown == true){
                 var label = (length * multiplier).toFixed(displayAccuracy);
-                this.setLabel(label);
+                this.setLabel(label, fontSize);
             }
-
-            this._length = length;
 
             if (locked == true){
                 this._isTouchEnabled = false;
@@ -94,11 +97,19 @@ define(['cocos2d', 'draggable'], function (cc, Draggable) {
         },
 
         _label: undefined,
-        setLabel: function (text) {
+        setLabel: function (text, fontSize) {
             text = text || '';
             if (_.isUndefined(this._label)) {
-                this._label = cc.LabelTTF.create(text, "mikadoBold", 22);
-                this.addChild(this._label);  
+                if(fontSize){
+                    if(this._length == 1){
+                        this._label = cc.LabelTTF.create(text, "mikadoBold", fontSize);
+                    } else {
+                        this._label = cc.LabelTTF.create(text, "mikadoBold", Math.floor(fontSize * 2));
+                    }
+                } else {
+                    this._label = cc.LabelTTF.create(text, "mikadoBold", 25);
+                }
+                this.addChild(this._label);
             }
             this._label.setPosition(cc.p(this.getContentSize().width / 2, this.getContentSize().height / 2));
         },
