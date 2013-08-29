@@ -103,7 +103,7 @@ define(['cocos2d', 'draggable'], function (cc, Draggable) {
                     if(this._length == 1){
                         this._label = cc.LabelTTF.create(text, "mikadoBold", Math.min(Math.floor(fontSize), 25));
                     } else {
-                        this._label = cc.LabelTTF.create(text, "mikadoBold", Math.min(Math.floor(fontSize * 1.75), 25));
+                        this._label = cc.LabelTTF.create(text, "mikadoBold", Math.min(Math.floor(fontSize * 0.8 * this._length), 25));
                     }
                 } else {
                     this._label = cc.LabelTTF.create(text, "mikadoBold", 25);

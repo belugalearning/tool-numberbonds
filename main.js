@@ -18,7 +18,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
     var barheight = 55;
     var unitlength = undefined;
     var homescale = 0.5;
-    var displaymultiplier = 1.88;
+    var displaymultiplier = 9999;
     var displayAccuracy = 0;
         if (Math.floor(displaymultiplier) != displaymultiplier){
             displayAccuracy = displaymultiplier.toString().split(".")[1].length;
@@ -94,19 +94,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     },
                     list3: {
                       definitionURL: 'local://symbols/lists/list0',
-                      capacity: 12,
-                      locked: false,
-                      mathml: '<list><members></members></list>'
-                    },
-                    list4: {
-                      definitionURL: 'local://symbols/lists/list0',
                       capacity: 10,
-                      locked: false,
-                      mathml: '<list><members></members></list>'
-                    },
-                    list5: {
-                      definitionURL: 'local://symbols/lists/list0',
-                      capacity: 25,
                       locked: false,
                       mathml: '<list><members></members></list>'
                     }
@@ -515,7 +503,9 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     ],
                     'label');
                 dz._label.setPosition(cc.p((margin/1.5 + unitlength * maxCapacity), barheight/2));
-                dz._label.setFontSize(18);
+                var digits = displaymultiplier.toString().length + 2
+                var fontSize = Math.floor(80/digits);
+                dz._label.setFontSize(fontSize);
                 dz._filled = 0;
                 dz._filledArray = new Array();
                 dz._length = container.capacity;

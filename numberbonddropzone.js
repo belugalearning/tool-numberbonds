@@ -23,7 +23,8 @@ define(['cocos2d', 'dropzone'], function (cc, DropZone, _) {
 		},
 
 		updateLabel: function(displaymultiplier, displayAccuracy) {
-            this._label._string = (this._filled * displaymultiplier).toFixed(displayAccuracy);            
+            this._label._string = (this._filled * displaymultiplier).toFixed(displayAccuracy);
+            this._label.setHorizontalAlignment(cc.TEXT_ALIGNMENT_CENTER);        
         }
 
     });
