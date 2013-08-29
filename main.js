@@ -16,11 +16,9 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
     var BADGE_Z = 3;
 
     var barheight = 55;
-
-    var unitlength = 60;
-    var homescale = 0.55;
-
-    var displaymultiplier = 1;
+    var unitlength = undefined;
+    var homescale = 0.5;
+    var displaymultiplier = .1;
     var displayAccuracy = 0;
             if (Math.floor(displaymultiplier) != displaymultiplier){
                 displayAccuracy = displaymultiplier.toString().split(".")[1].length;
@@ -57,23 +55,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
             }
 
             this.addBackgroundComponent(window.bl.getResource('nb_dock_top'), cc.p(42, 50 + (barheight/1.2) * 11));
-   
-            for(var i = 0; i<10; i++){
-                //add dockquantity badge
-                var clc = cc.Layer.create();
-                var background = new cc.Sprite();
-                background.initWithFile(window.bl.getResource('nb_notification'));
-                background.setPosition(cc.p(42 + (unitlength * (i + 1) * homescale), 60 + (barheight/1.2) * (i + 1)));
-                clc.addChild(background);
-                this.addChild(clc, BADGE_Z);
-
-                //add dock labelss
-                docklabels[i] = cc.LabelTTF.create(docklabelvalues[i], "mikadoBold", 10);
-                docklabels[i].setPosition(cc.p(42 + (unitlength * (i + 1) * homescale), 60 + (barheight/1.2) * (i + 1)));
-                docklabels[i].setHorizontalAlignment(cc.TEXT_ALIGNMENT_CENTER);
-                docklabels[i].setVerticalAlignment(cc.TEXT_ALIGNMENT_CENTER);
-                clc.addChild(docklabels[i]);
-            }
 
             var newQuestion = {
                 tool: 'number_bonds',
@@ -100,13 +81,13 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     },
                     list1: {
                       definitionURL: 'local://symbols/lists/list0',
-                      capacity: 10,
+                      capacity: 8,
                       locked: false,
                       mathml: '<list><members></members></list>'
                     },
                     list2: {
                       definitionURL: 'local://symbols/lists/list0',
-                      capacity: 10,
+                      capacity: 25,
                       locked: false,
                       mathml: '<list><members></members></list>'
                     }
@@ -127,6 +108,33 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                 },
                 labelShown: true,
                 state: '<state><csymbol definitionURL="local://symbols/lists/list0" /><csymbol definitionURL="local://symbols/lists/list1" /></state>',
+            }
+
+             var maxCapacity = 0;
+            _.each(newQuestion.symbols.lists, function (container, i){
+                if(container.capacity > maxCapacity){
+                    maxCapacity = container.capacity;
+                }
+                
+            });
+
+            unitlength = Math.floor(900/(6 + maxCapacity));
+
+            for(var i = 0; i<10; i++){
+                //add dockquantity badge
+                var clc = cc.Layer.create();
+                var background = new cc.Sprite();
+                background.initWithFile(window.bl.getResource('nb_notification'));
+                background.setPosition(cc.p(42 + (unitlength * (i + 1) * homescale), 60 + (barheight/1.2) * (i + 1)));
+                clc.addChild(background);
+                this.addChild(clc, BADGE_Z);
+
+                //add dock labelss
+                docklabels[i] = cc.LabelTTF.create(docklabelvalues[i], "mikadoBold", 10);
+                docklabels[i].setPosition(cc.p(42 + (unitlength * (i + 1) * homescale), 60 + (barheight/1.2) * (i + 1)));
+                docklabels[i].setHorizontalAlignment(cc.TEXT_ALIGNMENT_CENTER);
+                docklabels[i].setVerticalAlignment(cc.TEXT_ALIGNMENT_CENTER);
+                clc.addChild(docklabels[i]);
             }
 
             this.setQuestion(newQuestion);
@@ -178,7 +186,6 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     oldHoverDropZone,
                     newHoverDropZone;
 
-                console.log(draggable._lastPosition.x , draggable._homePosition.x)
                 if (tempPositionCount == 0 && (draggable._lastPosition.x == draggable._homePosition.x) && (draggable._lastPosition.y == draggable._homePosition.y)){
                         if(question.spawnPoints[draggable._length - 1].limit == false){
                         //add another bar when one is taken away
@@ -447,15 +454,27 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
 
             var self = this;
 
+            //work out unitlength dependent on maximum capacity dropzone
+            var maxCapacity = 0;
+            _.each(question.symbols.lists, function (container, i){
+                if(container.capacity > maxCapacity){
+                    maxCapacity = container.capacity;
+                }
+                
+            });
+
+            unitlength = Math.floor(900/(6 + maxCapacity));
             //add dropzone
             var margin = (600 - barheight * Object.keys(question.symbols.lists).length)/(Object.keys(question.symbols.lists).length + 1);
+            //left align dropzones so that largest dropzone is centred
+            var xPos = (1074 + (5 - maxCapacity)*unitlength)/2
     
             _.each(question.symbols.lists, function (container, i){
                 //extract index from 'list0/1/2...'
                 i = parseInt(i.slice(4));
 
                 var dz = self.addNumberBondDropZone({
-                    x:400, y:margin + (Object.keys(question.symbols.lists).length - 1 - i) * (barheight + margin)},
+                    x: xPos, y:margin + (Object.keys(question.symbols.lists).length - 1 - i) * (barheight + margin)},
                     [
                         {
                             x:0,
