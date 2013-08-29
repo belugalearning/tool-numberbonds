@@ -48,13 +48,13 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
             this.setBackground(window.bl.getResource('deep_water_background'));
 
             // add dock background
-            this.addBackgroundComponent(window.bl.getResource('nb_dock_bottom'), cc.p(42, 50));
+            this.addBackgroundComponent(window.bl.getResource('nb_dock_bottom'), cc.p(42, 75));
 
             for(var i=1;i<11;i++){
-               this.addBackgroundComponent(window.bl.getResource('nb_dock_middle60'), cc.p(42, 50 + (barheight/1.2) * i)); 
+               this.addBackgroundComponent(window.bl.getResource('nb_dock_middle60'), cc.p(42, 75 + (barheight/1.2) * i)); 
             }
 
-            this.addBackgroundComponent(window.bl.getResource('nb_dock_top'), cc.p(42, 50 + (barheight/1.2) * 11));
+            this.addBackgroundComponent(window.bl.getResource('nb_dock_top'), cc.p(42, 75 + (barheight/1.2) * 11));
 
             var newQuestion = {
                 tool: 'number_bonds',
@@ -87,7 +87,25 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     },
                     list2: {
                       definitionURL: 'local://symbols/lists/list0',
-                      capacity: 25,
+                      capacity: 10,
+                      locked: false,
+                      mathml: '<list><members></members></list>'
+                    },
+                    list3: {
+                      definitionURL: 'local://symbols/lists/list0',
+                      capacity: 12,
+                      locked: false,
+                      mathml: '<list><members></members></list>'
+                    },
+                    list4: {
+                      definitionURL: 'local://symbols/lists/list0',
+                      capacity: 10,
+                      locked: false,
+                      mathml: '<list><members></members></list>'
+                    },
+                    list5: {
+                      definitionURL: 'local://symbols/lists/list0',
+                      capacity: 12,
                       locked: false,
                       mathml: '<list><members></members></list>'
                     }
@@ -125,13 +143,13 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                 var clc = cc.Layer.create();
                 var background = new cc.Sprite();
                 background.initWithFile(window.bl.getResource('nb_notification'));
-                background.setPosition(cc.p(42 + (unitlength * (i + 1) * homescale), 60 + (barheight/1.2) * (i + 1)));
+                background.setPosition(cc.p(42 + (unitlength * (i + 1) * homescale), 85 + (barheight/1.2) * (i + 1)));
                 clc.addChild(background);
                 this.addChild(clc, BADGE_Z);
 
                 //add dock labelss
                 docklabels[i] = cc.LabelTTF.create(docklabelvalues[i], "mikadoBold", 10);
-                docklabels[i].setPosition(cc.p(42 + (unitlength * (i + 1) * homescale), 60 + (barheight/1.2) * (i + 1)));
+                docklabels[i].setPosition(cc.p(42 + (unitlength * (i + 1) * homescale), 85 + (barheight/1.2) * (i + 1)));
                 docklabels[i].setHorizontalAlignment(cc.TEXT_ALIGNMENT_CENTER);
                 docklabels[i].setVerticalAlignment(cc.TEXT_ALIGNMENT_CENTER);
                 clc.addChild(docklabels[i]);
@@ -191,7 +209,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                         //add another bar when one is taken away
                         var dg = self.addNumberBondsBar(
                             draggable._length,
-                            cc.p(40 + (unitlength * draggable._length * homescale * 0.5), 50 + (barheight/1.2) * draggable._length),
+                            cc.p(40 + (unitlength * draggable._length * homescale * 0.5), 75 + (barheight/1.2) * draggable._length),
                             question,
                             false,
                             question.labelShown,
@@ -246,6 +264,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                 //if oldDropZone is same as newDropZone AND ignore first tempPosition (reassignment of point hasn't happened yet?)
                 if (newHoverDropZone && newHoverDropZone == oldHoverDropZone && tempPositionCount != 0){ //else if oldDropZone is the same as newDropZone, only shift the necessary blocks 
                     if ((newHoverDropZone == startDropZone) || (draggable._length <= newHoverDropZone._length - newHoverDropZone._filled)){
+                        reject = false;
                         var oldDraggableIndex,
                             newDraggableIndex;
 
@@ -465,9 +484,9 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
 
             unitlength = Math.floor(900/(6 + maxCapacity));
             //add dropzone
-            var margin = (600 - barheight * Object.keys(question.symbols.lists).length)/(Object.keys(question.symbols.lists).length + 1);
+            var margin = (650 - barheight * Object.keys(question.symbols.lists).length)/(Object.keys(question.symbols.lists).length + 1);
             //left align dropzones so that largest dropzone is centred
-            var xPos = (1074 + (5 - maxCapacity)*unitlength)/2
+            var xPos = (1074 + (5 - maxCapacity) * unitlength)/2
     
             _.each(question.symbols.lists, function (container, i){
                 //extract index from 'list0/1/2...'
@@ -494,8 +513,8 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                         }
                     ],
                     'label');
-                dz._label.setPosition(cc.p((margin + unitlength * container.capacity), barheight/2));
-                dz._label.setFontSize(30);
+                dz._label.setPosition(cc.p((margin/1.5 + unitlength * maxCapacity), barheight/2));
+                dz._label.setFontSize(18);
                 dz._filled = 0;
                 dz._filledArray = new Array();
                 dz._length = container.capacity;
@@ -551,7 +570,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                         
                         var dg = self.addNumberBondsBar(
                             bar.value,
-                            cc.p(40 + (unitlength * bar.value * homescale * 0.5), 50 + (barheight/1.2) * bar.value),
+                            cc.p(40 + (unitlength * bar.value * homescale * 0.5), 75 + (barheight/1.2) * bar.value),
                             question,
                             false,
                             question.labelShown,
@@ -561,7 +580,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                         docklabelvalues[bar.value - 1]++;
                     }
                     docklabels[bar.value - 1].setString(docklabelvalues[bar.value - 1]);
-                    docklabels[bar.value - 1].setPosition(cc.p(42 + (unitlength * bar.value * homescale), 60 + (barheight/1.2) * (bar.value)));
+                    docklabels[bar.value - 1].setPosition(cc.p(42 + (unitlength * bar.value * homescale), 85 + (barheight/1.2) * (bar.value)));
                     docklabels[bar.value - 1].setHorizontalAlignment(cc.TEXT_ALIGNMENT_CENTER);
                     docklabels[bar.value - 1].setVerticalAlignment(cc.TEXT_ALIGNMENT_CENTER);
                 } else {
@@ -569,7 +588,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     for(var j = 0; j < 2; j++){
                         var dg = self.addNumberBondsBar(
                             bar.value,
-                            cc.p(40 + (unitlength * bar.value * homescale * 0.5), 50 + (barheight/1.2) * bar.value),
+                            cc.p(40 + (unitlength * bar.value * homescale * 0.5), 75 + (barheight/1.2) * bar.value),
                             question,
                             false,
                             question.labelShown,
@@ -579,7 +598,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     docklabelvalues[bar.value - 1] ="\u221E";
                     docklabels[bar.value - 1].setString("\u221E");
                     docklabels[bar.value - 1].setFontSize(20);
-                    docklabels[bar.value - 1].setPosition(cc.p(42 + (unitlength * bar.value * homescale), 62 + (barheight/1.2) * (bar.value)));
+                    docklabels[bar.value - 1].setPosition(cc.p(42 + (unitlength * bar.value * homescale), 87 + (barheight/1.2) * (bar.value)));
                     docklabels[bar.value - 1].setHorizontalAlignment(cc.TEXT_ALIGNMENT_CENTER);
                     docklabels[bar.value - 1].setVerticalAlignment(cc.TEXT_ALIGNMENT_CENTER);
                 }

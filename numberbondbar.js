@@ -11,7 +11,8 @@ define(['cocos2d', 'draggable'], function (cc, Draggable) {
 
         ctor:function(length, multiplier, locked, labelShown, unitlength) {
             this._super();
-            console.log(unitlength);
+
+            //work out degree of accuracy to show
             var displayAccuracy = 0;
             if (Math.floor(multiplier) != multiplier){
                 displayAccuracy = multiplier.toString().split(".")[1].length;
@@ -32,18 +33,18 @@ define(['cocos2d', 'draggable'], function (cc, Draggable) {
                     // { r: 75, g: 75,   b: 75, a: 175 },
                     // { r: 150, g: 150,   b: 150, a: 175 }
 
-                    { r: 134,   g: 139, b: 144, a: 175 },
-                    { r: 216,   g: 12,  b: 53,  a: 175 },
-                    { r: 86,    g: 176, b: 37,  a: 175 },
-                    { r: 231,   g: 51,  b: 132, a: 175 },
-                    { r: 232,   g: 155, b: 0,  a: 175 },
-                    { r: 49,    g: 142, b: 76,  a: 175 },
-                    { r: 73,    g: 71,  b: 71,  a: 175 },
-                    { r: 166,   g: 54,  b: 198, a: 175 },
-                    { r: 5,     g: 52,  b: 179, a: 175 },
-                    { r: 245,   g: 94,  b: 0,   a: 175 },
-                    { r: 5,     g: 52,  b: 179, a: 175 },
-                    { r: 245,   g: 94,  b: 0,   a: 175 }
+                    { r: 134,   g: 139, b: 144, a: 150 },
+                    { r: 216,   g: 12,  b: 53,  a: 150 },
+                    { r: 86,    g: 176, b: 37,  a: 150 },
+                    { r: 231,   g: 51,  b: 132, a: 150 },
+                    { r: 232,   g: 155, b: 0,  a: 150 },
+                    { r: 49,    g: 142, b: 76,  a: 150 },
+                    { r: 73,    g: 71,  b: 71,  a: 150 },
+                    { r: 166,   g: 54,  b: 198, a: 150 },
+                    { r: 5,     g: 52,  b: 179, a: 150 },
+                    { r: 245,   g: 94,  b: 0,   a: 150 },
+                    { r: 5,     g: 52,  b: 179, a: 150 },
+                    { r: 245,   g: 94,  b: 0,   a: 150 }
                 ]
             } else {
                 var colours = [
@@ -96,7 +97,7 @@ define(['cocos2d', 'draggable'], function (cc, Draggable) {
         setLabel: function (text) {
             text = text || '';
             if (_.isUndefined(this._label)) {
-                this._label = cc.LabelTTF.create(text, "mikadoBold", 25);
+                this._label = cc.LabelTTF.create(text, "mikadoBold", 22);
                 this.addChild(this._label);  
             }
             this._label.setPosition(cc.p(this.getContentSize().width / 2, this.getContentSize().height / 2));
