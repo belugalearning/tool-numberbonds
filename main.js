@@ -18,11 +18,12 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
     var barheight = 55;
     var unitlength = undefined;
     var homescale = 0.5;
-    var displaymultiplier = 9.99;
+    var displaymultiplier = 1.88;
     var displayAccuracy = 0;
-            if (Math.floor(displaymultiplier) != displaymultiplier){
-                displayAccuracy = displaymultiplier.toString().split(".")[1].length;
-            }
+        if (Math.floor(displaymultiplier) != displaymultiplier){
+            displayAccuracy = displaymultiplier.toString().split(".")[1].length;
+        }
+
 
     var docklabelvalues = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     var docklabels = new Array ();

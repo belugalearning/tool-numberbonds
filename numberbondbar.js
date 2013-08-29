@@ -17,6 +17,7 @@ define(['cocos2d', 'draggable'], function (cc, Draggable) {
             if (Math.floor(multiplier) != multiplier){
                 displayAccuracy = multiplier.toString().split(".")[1].length;
             }
+            var digits = multiplier.toString().length;
 
             var barheight = 55;
 
@@ -79,12 +80,10 @@ define(['cocos2d', 'draggable'], function (cc, Draggable) {
             
             this.setZoomOnTouchDown(false);
             this._length = length;
-
-            if(displayAccuracy != 0){
-                var fontSize = unitlength/(1.5*displayAccuracy);
-                console.log('fontSize = ' + fontSize)
-            }
-            
+  
+            var fontSize = (1.5 * unitlength)/digits;
+            console.log('fontSize = ' + fontSize)
+                    
             if(labelShown == true){
                 var label = (length * multiplier).toFixed(displayAccuracy);
                 this.setLabel(label, fontSize);
@@ -102,9 +101,9 @@ define(['cocos2d', 'draggable'], function (cc, Draggable) {
             if (_.isUndefined(this._label)) {
                 if(fontSize){
                     if(this._length == 1){
-                        this._label = cc.LabelTTF.create(text, "mikadoBold", fontSize);
+                        this._label = cc.LabelTTF.create(text, "mikadoBold", Math.min(Math.floor(fontSize), 25));
                     } else {
-                        this._label = cc.LabelTTF.create(text, "mikadoBold", Math.floor(fontSize * 2));
+                        this._label = cc.LabelTTF.create(text, "mikadoBold", Math.min(Math.floor(fontSize * 1.75), 25));
                     }
                 } else {
                     this._label = cc.LabelTTF.create(text, "mikadoBold", 25);
