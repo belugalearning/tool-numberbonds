@@ -18,7 +18,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
     var barheight = 55;
     var unitlength = undefined;
     var homescale = 0.5;
-    var displaymultiplier = 9999;
+    var displaymultiplier = 999;
     var displayAccuracy = 0;
         if (Math.floor(displaymultiplier) != displaymultiplier){
             displayAccuracy = displaymultiplier.toString().split(".")[1].length;
@@ -94,7 +94,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     },
                     list3: {
                       definitionURL: 'local://symbols/lists/list0',
-                      capacity: 10,
+                      capacity: 25,
                       locked: false,
                       mathml: '<list><members></members></list>'
                     }
@@ -473,16 +473,27 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
 
             unitlength = Math.floor(900/(6 + maxCapacity));
             //add dropzone
-            var margin = (650 - barheight * Object.keys(question.symbols.lists).length)/(Object.keys(question.symbols.lists).length + 1);
+            var verticalMargin = (650 - barheight * Object.keys(question.symbols.lists).length)/(Object.keys(question.symbols.lists).length + 1);
+            
             //left align dropzones so that largest dropzone is centred
-            var xPos = (1074 + (5 - maxCapacity) * unitlength)/2
-    
+            var xPos = (1074 + (5 - maxCapacity) * unitlength)/2;
+            var maxDropZoneEndpoint = 987 - 450/(6 + maxCapacity);
+            var dockLabelSpace = 1024 - maxDropZoneEndpoint;
+            console.log(dockLabelSpace)
+            
+
+            var maxTotal = maxCapacity * displaymultiplier;
+            var digits = maxTotal.toString().length;
+            var horizontalMargin = 2 + dockLabelSpace/2;
+            var fontSize = Math.floor(75/digits);
+
+
             _.each(question.symbols.lists, function (container, i){
                 //extract index from 'list0/1/2...'
                 i = parseInt(i.slice(4));
 
                 var dz = self.addNumberBondDropZone({
-                    x: xPos, y:margin + (Object.keys(question.symbols.lists).length - 1 - i) * (barheight + margin)},
+                    x: xPos, y:verticalMargin + (Object.keys(question.symbols.lists).length - 1 - i) * (barheight + verticalMargin)},
                     [
                         {
                             x:0,
@@ -502,9 +513,9 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                         }
                     ],
                     'label');
-                dz._label.setPosition(cc.p((margin/1.5 + unitlength * maxCapacity), barheight/2));
-                var digits = displaymultiplier.toString().length + 2
-                var fontSize = Math.floor(80/digits);
+                dz._label.setPosition(cc.p((horizontalMargin + unitlength * maxCapacity), barheight/2));
+                
+
                 dz._label.setFontSize(fontSize);
                 dz._filled = 0;
                 dz._filledArray = new Array();
@@ -527,7 +538,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     //make bar
                     var dg = self.addNumberBondsBar(
                         bar.value,
-                        cc.p(cagepadding + dropZonePos.x + (dz._filled + bar.value/2)* unitlength, cagepadding + dropZonePos.y + barheight/2),
+                        cc.p(cagepadding + dropZonePos.x + (dz._filled + bar.value/2) * unitlength, cagepadding + dropZonePos.y + barheight/2),
                         question,
                         bar.locked,
                         question.labelShown,
@@ -586,7 +597,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                             unitlength
                         );
                     }
-                    docklabelvalues[bar.value - 1] ="\u221E";
+                    docklabelvalues[bar.value - 1] = "\u221E";
                     docklabels[bar.value - 1].setString("\u221E");
                     docklabels[bar.value - 1].setFontSize(20);
                     docklabels[bar.value - 1].setPosition(cc.p(42 + (unitlength * bar.value * homescale), 87 + (barheight/1.2) * (bar.value)));
