@@ -62,7 +62,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                 text: 'Make 10 in two different ways.',
                 spawnPoints: [
                   { value: 1, limit: false, mathml: '<cn>1</cn>' },
-                  { value: 2, limit: 4, mathml: '<cn>2</cn>' },
+                  { value: 2, limit: 0, mathml: '<cn>2</cn>' },
                   { value: 3, limit: 10, mathml: '<cn>3</cn>' },
                   { value: 4, limit: 2,     mathml: '<cn>4</cn>' },
                   { value: 5, limit: false, mathml: '<cn>5</cn>' },
@@ -128,20 +128,22 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
             unitlength = Math.floor(900/(6 + maxCapacity));
 
             for(var i = 0; i<10; i++){
-                //add dockquantity badge
-                var clc = cc.Layer.create();
-                var background = new cc.Sprite();
-                background.initWithFile(window.bl.getResource('nb_notification'));
-                background.setPosition(cc.p(42 + (unitlength * (i + 1) * homescale), 85 + (barheight/1.2) * (i + 1)));
-                clc.addChild(background);
-                this.addChild(clc, BADGE_Z);
+                if(newQuestion.spawnPoints[i].limit !== 0){
+                    //add dockquantity badge
+                    var clc = cc.Layer.create();
+                    var background = new cc.Sprite();
+                    background.initWithFile(window.bl.getResource('nb_notification'));
+                    background.setPosition(cc.p(42 + (unitlength * (i + 1) * homescale), 85 + (barheight/1.2) * (i + 1)));
+                    clc.addChild(background);
+                    this.addChild(clc, BADGE_Z);
 
-                //add dock labelss
-                docklabels[i] = cc.LabelTTF.create(docklabelvalues[i], "mikadoBold", 10);
-                docklabels[i].setPosition(cc.p(42 + (unitlength * (i + 1) * homescale), 85 + (barheight/1.2) * (i + 1)));
-                docklabels[i].setHorizontalAlignment(cc.TEXT_ALIGNMENT_CENTER);
-                docklabels[i].setVerticalAlignment(cc.TEXT_ALIGNMENT_CENTER);
-                clc.addChild(docklabels[i]);
+                    //add dock labelss
+                    docklabels[i] = cc.LabelTTF.create(docklabelvalues[i], "mikadoBold", 10);
+                    docklabels[i].setPosition(cc.p(42 + (unitlength * (i + 1) * homescale), 85 + (barheight/1.2) * (i + 1)));
+                    docklabels[i].setHorizontalAlignment(cc.TEXT_ALIGNMENT_CENTER);
+                    docklabels[i].setVerticalAlignment(cc.TEXT_ALIGNMENT_CENTER);
+                    clc.addChild(docklabels[i]);
+                }
             }
 
             this.setQuestion(newQuestion);
@@ -585,7 +587,7 @@ define(['exports', 'cocos2d', 'qlayer', 'bldrawnode', 'toollayer', 'draggable', 
                     docklabels[bar.value - 1].setPosition(cc.p(42 + (unitlength * bar.value * homescale), 85 + (barheight/1.2) * (bar.value)));
                     docklabels[bar.value - 1].setHorizontalAlignment(cc.TEXT_ALIGNMENT_CENTER);
                     docklabels[bar.value - 1].setVerticalAlignment(cc.TEXT_ALIGNMENT_CENTER);
-                } else {
+                } else if (bar.limit === false){
                     // make two blocks. if one gets dragged out, another is created in its place.
                     for(var j = 0; j < 2; j++){
                         var dg = self.addNumberBondsBar(
